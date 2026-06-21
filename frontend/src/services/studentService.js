@@ -59,8 +59,8 @@ export const studentService = {
     });
   },
 
-  getGradesByClass: async (classId, subjectName, examName) => {
-    const query = `?subjectName=${subjectName || ''}&examName=${examName || ''}`;
+  getGradesByClass: async (classId, subjectName, examName, section) => {
+    const query = `?subjectName=${subjectName || ''}&examName=${examName || ''}&section=${section || ''}`;
     return await apiCall(`/teacher/classes/${classId}/grades${query}`);
   },
 

@@ -86,12 +86,17 @@ export const getGradesByClass = async (req, res) => {
 
     const studentDocs = await Student.find({ classId });
     const rollMap = {};
+    const sectionMap = {};
     studentDocs.forEach(s => {
-      rollMap[s.user.toString()] = s.rollNumber;
+      if (s.user) {
+        rollMap[s.user.toString()] = s.rollNumber;
+        sectionMap[s.user.toString()] = s.section || 'A';
+      }
     });
 
-    const formatted = results.map(rec => {
+    let formatted = results.map(rec => {
       if (!rec.student) return null;
+      const studentUserId = rec.student._id.toString();
       return {
         _id: rec._id,
         subjectName: rec.subjectId?.name || 'Subject',
@@ -105,11 +110,17 @@ export const getGradesByClass = async (req, res) => {
           name: rec.student.name,
           email: rec.student.email,
           studentInfo: {
-            rollNumber: rollMap[rec.student._id.toString()] || '-'
+            rollNumber: rollMap[studentUserId] || '-',
+            section: sectionMap[studentUserId] || 'A'
           }
         }
       };
     }).filter(r => r !== null);
+
+    const { section } = req.query;
+    if (section && section !== 'All') {
+      formatted = formatted.filter(r => r.student.studentInfo.section === section);
+    }
 
     res.json(formatted);
   } catch (error) {
