@@ -11,7 +11,8 @@ import {
   resetPassword,
   requestOtp,
   verifyOtpLogin,
-  toggleTwoFactor
+  toggleTwoFactor,
+  getNotifications
 } from '../controllers/authController.js';
 
 const router = express.Router();
@@ -20,6 +21,7 @@ router.post('/login', loginUser);
 router.post('/register', registerUser);
 router.get('/me', protect, getMe);
 router.put('/profile', protect, uploadSingle, updateProfile);
+router.get('/notifications', protect, getNotifications);
 
 // Security Upgrades
 router.post('/refresh', refreshAccessToken);

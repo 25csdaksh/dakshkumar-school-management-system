@@ -4,6 +4,7 @@ import Teacher from '../models/Teacher.js';
 import Role from '../models/Role.js';
 import Subject from '../models/Subject.js';
 import ActivityLog from '../models/ActivityLog.js';
+import Notice from '../models/Notice.js';
 import jwt from 'jsonwebtoken';
 
 const generateToken = (id) => {
@@ -495,6 +496,37 @@ export const toggleTwoFactor = async (req, res) => {
       isTwoFactorEnabled: user.isTwoFactorEnabled,
       twoFactorSecret: user.twoFactorSecret
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get user role-filtered notifications
+// @route   GET /api/auth/notifications
+export const getNotifications = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('role');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const roleName = user.role?.name || 'student';
+    
+    let audiences = ['All'];
+    if (roleName === 'student') {
+      audiences.push('Students');
+    } else if (roleName === 'parent') {
+      audiences.push('Parents', 'Students');
+    } else if (roleName === 'teacher') {
+      audiences.push('Teachers');
+    } else if (roleName === 'admin') {
+      audiences.push('Teachers', 'Students', 'Parents');
+    }
+
+    const notifications = await Notice.find({
+      targetAudience: { $in: audiences }
+    }).sort({ createdAt: -1 }).limit(20);
+
+    res.json(notifications);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

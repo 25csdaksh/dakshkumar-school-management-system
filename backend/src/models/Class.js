@@ -27,7 +27,11 @@ const classSchema = new mongoose.Schema({
   classTeacher: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
-  }
+  },
+  sectionTeachers: [{
+    section: { type: String, required: true },
+    teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
+  }]
 }, {
   timestamps: true
 });

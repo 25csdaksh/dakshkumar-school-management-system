@@ -147,10 +147,12 @@ export const getAssignedClasses = async (req, res) => {
     const classes = await Class.find({
       $or: [
         { classTeacher: req.user._id },
+        { 'sectionTeachers.teacher': req.user._id },
         { 'subjects.teacher': req.user._id }
       ]
     })
     .populate('classTeacher', 'name email')
+    .populate('sectionTeachers.teacher', 'name email')
     .populate('subjects.subject');
 
     // Format output to send flat names of subjects for frontend compatibility
@@ -164,6 +166,7 @@ export const getAssignedClasses = async (req, res) => {
         name: c.name,
         sections: c.sections,
         classTeacher: c.classTeacher,
+        sectionTeachers: c.sectionTeachers || [],
         subjects: classSubjects
       };
     });

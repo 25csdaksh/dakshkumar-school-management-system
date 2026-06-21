@@ -7,6 +7,7 @@ export const TeacherLayout = ({ children }) => {
     { label: 'Attendance logs', path: '/teacher/attendance', icon: 'attendance' },
     { label: 'Exam Grades', path: '/teacher/marks', icon: 'exams' },
     { label: 'Homework Logs', path: '/teacher/homework', icon: 'homework' },
+    { label: 'Exam Schedules', path: '/teacher/exams', icon: 'exams' },
     { label: 'Apply Leave', path: '/teacher/leaves', icon: 'reports' },
     { label: 'My Profile', path: '/teacher/profile', icon: 'settings' }
   ];

@@ -48,7 +48,7 @@ export const getDashboardStats = async (req, res) => {
 
 // @desc    Admin: Setup class
 export const createClass = async (req, res) => {
-  const { name, sections, classTeacher } = req.body;
+  const { name, sections, classTeacher, sectionTeachers } = req.body;
   try {
     const classExists = await Class.findOne({ name });
     if (classExists) {
@@ -58,7 +58,8 @@ export const createClass = async (req, res) => {
     const newClass = new Class({
       name,
       sections: sections || ['A'],
-      classTeacher: classTeacher || undefined
+      classTeacher: classTeacher || undefined,
+      sectionTeachers: sectionTeachers || []
     });
 
     const savedClass = await newClass.save();
@@ -73,19 +74,25 @@ export const getClasses = async (req, res) => {
   try {
     const classes = await Class.find({})
       .populate('classTeacher', 'name email')
+      .populate('sectionTeachers.teacher', 'name email')
       .populate('subjects.subject')
       .populate('subjects.teacher', 'name email');
 
     // Format output to look like flat objects for frontend compatibility
-    const formatted = classes.map(c => ({
-      _id: c._id,
-      name: c.name,
-      sections: c.sections,
-      classTeacher: c.classTeacher,
-      subjects: c.subjects.map(s => ({
-        name: s.subject?.name || 'Subject',
-        teacher: s.teacher
-      }))
+    const formatted = await Promise.all(classes.map(async c => {
+      const studentCount = await Student.countDocuments({ classId: c._id });
+      return {
+        _id: c._id,
+        name: c.name,
+        sections: c.sections,
+        classTeacher: c.classTeacher,
+        sectionTeachers: c.sectionTeachers || [],
+        studentCount,
+        subjects: c.subjects.map(s => ({
+          name: s.subject?.name || 'Subject',
+          teacher: s.teacher
+        }))
+      };
     }));
 
     res.json(formatted);
@@ -200,7 +207,7 @@ export const deleteNotice = async (req, res) => {
 // @desc    Admin: Update class details
 // @route   PUT /api/admin/classes/:id
 export const updateClass = async (req, res) => {
-  const { name, sections, classTeacher, subjects } = req.body;
+  const { name, sections, classTeacher, sectionTeachers, subjects } = req.body;
   try {
     const schoolClass = await Class.findById(req.params.id);
     if (!schoolClass) {
@@ -210,6 +217,7 @@ export const updateClass = async (req, res) => {
     if (name) schoolClass.name = name;
     if (sections) schoolClass.sections = sections;
     if (classTeacher !== undefined) schoolClass.classTeacher = classTeacher || undefined;
+    if (sectionTeachers !== undefined) schoolClass.sectionTeachers = sectionTeachers;
     
     if (subjects && Array.isArray(subjects)) {
       const updatedSubjects = [];
@@ -232,6 +240,7 @@ export const updateClass = async (req, res) => {
 
     const updated = await Class.findById(req.params.id)
       .populate('classTeacher', 'name email')
+      .populate('sectionTeachers.teacher', 'name email')
       .populate('subjects.subject')
       .populate('subjects.teacher', 'name email');
 
@@ -240,6 +249,7 @@ export const updateClass = async (req, res) => {
       name: updated.name,
       sections: updated.sections,
       classTeacher: updated.classTeacher,
+      sectionTeachers: updated.sectionTeachers || [],
       subjects: updated.subjects.map(s => ({
         name: s.subject?.name || 'Subject',
         teacher: s.teacher

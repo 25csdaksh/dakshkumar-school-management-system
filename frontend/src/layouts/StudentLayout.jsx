@@ -7,6 +7,7 @@ export const StudentLayout = ({ children }) => {
     { label: 'My Grades', path: '/student/results', icon: 'exams' },
     { label: 'Attendance logs', path: '/student/attendance', icon: 'attendance' },
     { label: 'Homework', path: '/student/homework', icon: 'homework' },
+    { label: 'Exam Schedules', path: '/student/exams', icon: 'exams' },
     { label: 'GPS Bus Tracking', path: '/student/bus-tracking', icon: 'bus-tracking' },
     { label: 'My Profile', path: '/student/profile', icon: 'settings' }
   ];

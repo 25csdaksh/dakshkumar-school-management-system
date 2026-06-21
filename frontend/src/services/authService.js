@@ -50,6 +50,10 @@ export const authService = {
       localStorage.setItem('user', JSON.stringify(data));
     }
     return data;
+  },
+
+  getNotifications: async () => {
+    return await apiCall('/auth/notifications');
   }
 };
 

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
+import { authService } from '../services/authService.js';
 import {
   LayoutDashboard,
   Users,
@@ -20,7 +21,8 @@ import {
   Settings,
   Building,
   Package,
-  Navigation
+  Navigation,
+  Bell
 } from 'lucide-react';
 
 export const BaseLayout = ({ children, menuItems }) => {
@@ -28,6 +30,37 @@ export const BaseLayout = ({ children, menuItems }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [notifications, setNotifications] = useState([]);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await authService.getNotifications();
+        setNotifications(data);
+        const lastRead = localStorage.getItem('lastReadNotifications') || 0;
+        const newUnread = data.filter(n => new Date(n.createdAt).getTime() > Number(lastRead)).length;
+        setUnreadCount(newUnread);
+      } catch (err) {
+        console.error('Failed to fetch notifications', err);
+      }
+    };
+    if (user) {
+      fetchNotifications();
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
+  const handleToggleNotifications = () => {
+    setNotificationsOpen(!notificationsOpen);
+    if (!notificationsOpen) {
+      setUnreadCount(0);
+      localStorage.setItem('lastReadNotifications', Date.now().toString());
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -184,6 +217,74 @@ export const BaseLayout = ({ children, menuItems }) => {
           </div>
 
           <div className="nav-actions">
+            {/* Notifications Bell */}
+            <div style={{ position: 'relative' }}>
+              <button className="theme-toggle" onClick={handleToggleNotifications} title="Notifications">
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span style={{
+                    position: 'absolute',
+                    top: '2px',
+                    right: '2px',
+                    width: '8px',
+                    height: '8px',
+                    background: 'var(--danger)',
+                    borderRadius: '50%',
+                    boxShadow: '0 0 4px var(--danger)'
+                  }} />
+                )}
+              </button>
+
+              {notificationsOpen && (
+                <div className="glass-panel" style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '12px',
+                  width: '320px',
+                  maxHeight: '400px',
+                  overflowY: 'auto',
+                  zIndex: 1000,
+                  padding: '16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '12px',
+                  boxShadow: 'var(--shadow-lg)'
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
+                    <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Announcements</h4>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{notifications.length} total</span>
+                  </div>
+                  {notifications.length === 0 ? (
+                    <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                      No announcements at this time.
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      {notifications.map((n) => (
+                        <div key={n._id} style={{
+                          padding: '10px',
+                          background: 'var(--bg-app)',
+                          borderRadius: '8px',
+                          borderLeft: '3px solid var(--primary)',
+                          fontSize: '0.85rem',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '4px'
+                        }}>
+                          <strong style={{ color: 'var(--text-main)' }}>{n.title}</strong>
+                          <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.8rem', lineHeight: '1.4' }}>{n.content}</p>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', alignSelf: 'flex-end', marginTop: '2px' }}>
+                            {new Date(n.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Theme Toggle Button */}
             <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
               {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
