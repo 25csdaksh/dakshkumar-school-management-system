@@ -1,20 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { studentService } from '../../services/studentService.js';
-import { Plus, Award, Calendar, X } from 'lucide-react';
+import academicService from '../../services/academicService.js';
+import { Plus, Award, Calendar, X, Edit, Trash } from 'lucide-react';
 
 export const Exams = () => {
-  const [exams, setExams] = useState([
-    { id: 1, name: 'Midterm Exam 2026', className: 'Grade 10', term: 'Term 1', startDate: '2026-06-19' },
-    { id: 2, name: 'Final Semester Finals', className: 'Grade 12', term: 'Term 2', startDate: '2026-06-26' }
-  ]);
+  const [exams, setExams] = useState([]);
   const [classes, setClasses] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingExamId, setEditingExamId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
 
   // Form states
   const [name, setName] = useState('');
   const [classId, setClassId] = useState('');
   const [term, setTerm] = useState('Term 1');
   const [startDate, setStartDate] = useState('');
+
+  const loadExams = async () => {
+    try {
+      setLoading(true);
+      const data = await academicService.getExams();
+      setExams(data);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch exam schedules');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const fetchClasses = async () => {
@@ -29,23 +43,61 @@ export const Exams = () => {
       }
     };
     fetchClasses();
+    loadExams();
   }, []);
 
-  const handleAddExam = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    const targetClass = classes.find(c => c._id === classId);
-    const newExam = {
-      id: Date.now(),
-      name,
-      className: targetClass ? targetClass.name : 'Unknown Class',
-      term,
-      startDate
-    };
+    try {
+      setError('');
+      setMessage('');
+      const payload = { name, classId, term, startDate };
+      if (editingExamId) {
+        await academicService.updateExam(editingExamId, payload);
+        setMessage('Exam schedule updated successfully!');
+      } else {
+        await academicService.createExam(payload);
+        setMessage('Exam schedule created successfully!');
+      }
+      setShowModal(false);
+      setName('');
+      setStartDate('');
+      setEditingExamId(null);
+      loadExams();
+    } catch (err) {
+      setError(err.message || 'Failed to save exam schedule');
+    }
+  };
 
-    setExams([...exams, newExam]);
-    setShowModal(false);
+  const handleDeleteExam = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this exam schedule?')) return;
+    try {
+      setError('');
+      setMessage('');
+      await academicService.deleteExam(id);
+      setMessage('Exam schedule deleted successfully.');
+      loadExams();
+    } catch (err) {
+      setError(err.message || 'Failed to delete exam schedule');
+    }
+  };
+
+  const openEditModal = (ex) => {
+    setEditingExamId(ex._id);
+    setName(ex.name);
+    setClassId(ex.classId?._id || ex.classId);
+    setTerm(ex.term);
+    setStartDate(ex.startDate ? new Date(ex.startDate).toISOString().split('T')[0] : '');
+    setShowModal(true);
+  };
+
+  const openAddModal = () => {
+    setEditingExamId(null);
     setName('');
+    if (classes.length > 0) setClassId(classes[0]._id);
+    setTerm('Term 1');
     setStartDate('');
+    setShowModal(true);
   };
 
   return (
@@ -55,59 +107,85 @@ export const Exams = () => {
           <h2>Examination schedules</h2>
           <p style={{ color: 'var(--text-muted)' }}>Setup term tests, final examinations, and schedule timelines.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={openAddModal}>
           <Plus size={18} />
           <span>New Exam Schedule</span>
         </button>
       </div>
 
-      <div className="glass-panel table-responsive">
-        <table className="custom-table">
-          <thead>
-            <tr>
-              <th>Exam Name</th>
-              <th>Target Class</th>
-              <th>Academic Term</th>
-              <th>Start Date</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {exams.map((ex) => (
-              <tr key={ex.id}>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Award size={18} color="var(--primary)" />
-                    <strong style={{ color: 'var(--text-main)' }}>{ex.name}</strong>
-                  </div>
-                </td>
-                <td>{ex.className}</td>
-                <td><span className="badge badge-primary">{ex.term}</span></td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <Calendar size={14} />
-                    <span>{ex.startDate}</span>
-                  </div>
-                </td>
-                <td>
-                  <span className="badge badge-success">Scheduled</span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {message && <div style={{ background: 'var(--success-glow)', color: 'var(--success)', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>{message}</div>}
+      {error && <div style={{ background: 'var(--danger-glow)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>{error}</div>}
 
-      {/* New Exam Modal */}
+      {loading ? (
+        <div className="text-center" style={{ padding: '40px' }}><h3>Loading Exam Schedules...</h3></div>
+      ) : (
+        <div className="glass-panel table-responsive">
+          <table className="custom-table">
+            <thead>
+              <tr>
+                <th>Exam Name</th>
+                <th>Target Class</th>
+                <th>Academic Term</th>
+                <th>Start Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {exams.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="text-center" style={{ color: 'var(--text-muted)', padding: '24px' }}>
+                    No exam schedules found. Click 'New Exam Schedule' to add one.
+                  </td>
+                </tr>
+              ) : (
+                exams.map((ex) => (
+                  <tr key={ex._id}>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <Award size={18} color="var(--primary)" />
+                        <strong style={{ color: 'var(--text-main)' }}>{ex.name}</strong>
+                      </div>
+                    </td>
+                    <td>{ex.classId?.name || 'Class Deleted'}</td>
+                    <td><span className="badge badge-primary">{ex.term}</span></td>
+                    <td>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Calendar size={14} />
+                        <span>{ex.startDate ? new Date(ex.startDate).toLocaleDateString() : 'N/A'}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className="badge badge-success">Scheduled</span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '8px' }}>
+                        <button className="btn btn-secondary" style={{ padding: '6px 10px', fontSize: '0.8rem', display: 'flex', gap: '4px' }} onClick={() => openEditModal(ex)}>
+                          <Edit size={14} /> Edit
+                        </button>
+                        <button className="btn btn-danger" style={{ padding: '6px' }} onClick={() => handleDeleteExam(ex._id)}>
+                          <Trash size={14} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Exam Modal */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content">
             <button className="modal-close" onClick={() => setShowModal(false)}>
               <X size={20} />
             </button>
-            <h3 style={{ marginBottom: '20px' }}>Add Exam Schedule</h3>
+            <h3 style={{ marginBottom: '20px' }}>{editingExamId ? 'Edit Exam Schedule' : 'Add Exam Schedule'}</h3>
 
-            <form onSubmit={handleAddExam}>
+            <form onSubmit={handleFormSubmit}>
               <div className="form-group">
                 <label className="form-label">Exam Title</label>
                 <input 
@@ -161,7 +239,7 @@ export const Exams = () => {
               </div>
 
               <button type="submit" className="btn btn-primary w-full mt-4">
-                Schedule Exam
+                {editingExamId ? 'Save Changes' : 'Schedule Exam'}
               </button>
             </form>
           </div>

@@ -16,6 +16,10 @@ export const Academic = () => {
   const [promotion, setPromotion] = useState({ fromClassId: '', toClassId: '' });
   const [certificate, setCertificate] = useState({ studentId: '', type: 'TC', leavingReason: '', conduct: 'Excellent' });
 
+  // Academic year edit states
+  const [editingYearId, setEditingYearId] = useState(null);
+  const [editYearData, setEditYearData] = useState({ year: '', startDate: '', endDate: '', isActive: false });
+
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -43,6 +47,28 @@ export const Academic = () => {
       await academicService.createYear(newYear);
       setMessage('Academic year added successfully!');
       setNewYear({ year: '', startDate: '', endDate: '', isActive: false });
+      const yrData = await academicService.getYears();
+      setYears(yrData);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const startEdit = (y) => {
+    setEditingYearId(y._id);
+    setEditYearData({
+      year: y.year,
+      startDate: y.startDate ? new Date(y.startDate).toISOString().split('T')[0] : '',
+      endDate: y.endDate ? new Date(y.endDate).toISOString().split('T')[0] : '',
+      isActive: y.isActive
+    });
+  };
+
+  const handleUpdateYear = async (id) => {
+    try {
+      await academicService.updateYear(id, editYearData);
+      setMessage('Academic year updated successfully!');
+      setEditingYearId(null);
       const yrData = await academicService.getYears();
       setYears(yrData);
     } catch (err) {
@@ -169,23 +195,86 @@ export const Academic = () => {
               <tbody>
                 {years.map((y) => (
                   <tr key={y._id}>
-                    <td>{y.year}</td>
-                    <td>{new Date(y.startDate).toLocaleDateString()}</td>
-                    <td>{new Date(y.endDate).toLocaleDateString()}</td>
-                    <td>
-                      {y.isActive ? (
-                        <span className="badge badge-success">Active</span>
-                      ) : (
-                        <span className="badge badge-primary">Inactive</span>
-                      )}
-                    </td>
-                    <td>
-                      {!y.isActive && (
-                        <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => handleSetActiveYear(y._id)}>
-                          Activate
-                        </button>
-                      )}
-                    </td>
+                    {editingYearId === y._id ? (
+                      <>
+                        <td>
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            style={{ padding: '4px 8px', fontSize: '0.9rem' }} 
+                            value={editYearData.year} 
+                            onChange={(e) => setEditYearData({ ...editYearData, year: e.target.value })}
+                            required 
+                          />
+                        </td>
+                        <td>
+                          <input 
+                            type="date" 
+                            className="form-control" 
+                            style={{ padding: '4px', fontSize: '0.8rem' }} 
+                            value={editYearData.startDate} 
+                            onChange={(e) => setEditYearData({ ...editYearData, startDate: e.target.value })}
+                            required 
+                          />
+                        </td>
+                        <td>
+                          <input 
+                            type="date" 
+                            className="form-control" 
+                            style={{ padding: '4px', fontSize: '0.8rem' }} 
+                            value={editYearData.endDate} 
+                            onChange={(e) => setEditYearData({ ...editYearData, endDate: e.target.value })}
+                            required 
+                          />
+                        </td>
+                        <td>
+                          <select 
+                            className="form-control" 
+                            style={{ padding: '4px 8px', fontSize: '0.8rem' }}
+                            value={editYearData.isActive ? 'true' : 'false'}
+                            onChange={(e) => setEditYearData({ ...editYearData, isActive: e.target.value === 'true' })}
+                          >
+                            <option value="true">Active</option>
+                            <option value="false">Inactive</option>
+                          </select>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <button className="btn btn-primary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => handleUpdateYear(y._id)}>
+                              Save
+                            </button>
+                            <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => setEditingYearId(null)}>
+                              Cancel
+                            </button>
+                          </div>
+                        </td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{y.year}</td>
+                        <td>{new Date(y.startDate).toLocaleDateString()}</td>
+                        <td>{new Date(y.endDate).toLocaleDateString()}</td>
+                        <td>
+                          {y.isActive ? (
+                            <span className="badge badge-success">Active</span>
+                          ) : (
+                            <span className="badge badge-primary">Inactive</span>
+                          )}
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', gap: '4px' }}>
+                            <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => startEdit(y)}>
+                              Edit
+                            </button>
+                            {!y.isActive && (
+                              <button className="btn btn-secondary" style={{ padding: '4px 8px', fontSize: '0.8rem' }} onClick={() => handleSetActiveYear(y._id)}>
+                                Activate
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </>
+                    )}
                   </tr>
                 ))}
               </tbody>

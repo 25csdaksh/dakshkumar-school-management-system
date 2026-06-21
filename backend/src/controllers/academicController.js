@@ -3,6 +3,9 @@ import Timetable from '../models/Timetable.js';
 import Certificate from '../models/Certificate.js';
 import Student from '../models/Student.js';
 import Class from '../models/Class.js';
+import Exam from '../models/Exam.js';
+import Homework from '../models/Homework.js';
+import Subject from '../models/Subject.js';
 
 // ==========================================
 // 1. ACADEMIC YEAR
@@ -165,6 +168,181 @@ export const getCertificates = async (req, res) => {
       })
       .populate('issuedBy', 'name');
     res.json(certs);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ==========================================
+// 5. UPDATE ACADEMIC YEAR
+// ==========================================
+export const updateAcademicYear = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { year, startDate, endDate, isActive } = req.body;
+
+    if (isActive) {
+      // Set all other years to inactive
+      await AcademicYear.updateMany({ _id: { $ne: id } }, { isActive: false });
+    }
+
+    const updated = await AcademicYear.findByIdAndUpdate(
+      id,
+      { year, startDate, endDate, isActive },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Academic Year not found' });
+    }
+
+    res.json({ message: 'Academic year updated successfully', data: updated });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ==========================================
+// 6. EXAM SCHEDULES
+// ==========================================
+export const getExams = async (req, res) => {
+  try {
+    const exams = await Exam.find().populate('classId', 'name');
+    res.json(exams);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const createExam = async (req, res) => {
+  try {
+    const { name, classId, term, startDate } = req.body;
+    const newExam = new Exam({ name, classId, term, startDate });
+    await newExam.save();
+    
+    const populated = await Exam.findById(newExam._id).populate('classId', 'name');
+    res.status(201).json({ message: 'Exam schedule created successfully', data: populated });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const updateExam = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, classId, term, startDate } = req.body;
+    const updated = await Exam.findByIdAndUpdate(
+      id,
+      { name, classId, term, startDate },
+      { new: true }
+    ).populate('classId', 'name');
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Exam schedule not found' });
+    }
+    res.json({ message: 'Exam schedule updated successfully', data: updated });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteExam = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Exam.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Exam schedule not found' });
+    }
+    res.json({ message: 'Exam schedule deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ==========================================
+// 7. HOMEWORK LOGS
+// ==========================================
+export const getHomeworkList = async (req, res) => {
+  try {
+    const { classId, section } = req.query;
+    const query = {};
+    if (classId) query.classId = classId;
+    if (section) query.section = section;
+
+    const homeworkList = await Homework.find(query)
+      .populate('classId', 'name')
+      .populate('subjectId', 'name')
+      .populate('teacherId', 'name')
+      .sort({ dueDate: 1 });
+
+    const formatted = homeworkList.map(hw => ({
+      _id: hw._id,
+      title: hw.title,
+      description: hw.description,
+      className: hw.classId?.name || 'Unknown Class',
+      subject: hw.subjectId?.name || 'Subject',
+      dueDate: hw.dueDate ? new Date(hw.dueDate).toISOString().split('T')[0] : '',
+      teacher: hw.teacherId?.name || 'Teacher',
+      section: hw.section || 'A'
+    }));
+
+    res.json(formatted);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const createHomework = async (req, res) => {
+  try {
+    const { title, description, classId, subjectId, section, dueDate } = req.body;
+    
+    if (!title || !description || !classId || !subjectId || !dueDate) {
+      return res.status(400).json({ message: 'All homework fields are required' });
+    }
+
+    const homework = new Homework({
+      title,
+      description,
+      classId,
+      subjectId,
+      section: section || 'A',
+      dueDate,
+      teacherId: req.user._id
+    });
+
+    await homework.save();
+
+    res.status(201).json({ message: 'Homework created successfully', data: homework });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ==========================================
+// 8. WEEKLY BULK TIMETABLE SAVE
+// ==========================================
+export const saveBulkTimetable = async (req, res) => {
+  try {
+    const { classId, section, schedules } = req.body;
+
+    if (!classId || !section || !schedules || !Array.isArray(schedules)) {
+      return res.status(400).json({ message: 'Invalid payload for bulk timetable save' });
+    }
+
+    for (const sched of schedules) {
+      const { day, periods } = sched;
+      // Filter out invalid periods (periods that have no subject or teacher assigned)
+      const validPeriods = periods.filter(p => p.subject && p.teacher);
+      
+      // Update or create
+      await Timetable.findOneAndUpdate(
+        { classId, section, day },
+        { periods: validPeriods },
+        { upsert: true, new: true }
+      );
+    }
+
+    res.status(201).json({ message: 'Weekly timetable bulk saved successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

@@ -89,19 +89,70 @@ export const BaseLayout = ({ children, menuItems }) => {
           <span className="logo-text">EduSphere ERP</span>
         </div>
 
-        <ul className="sidebar-menu">
-          {menuItems.map((item, index) => {
-            const isActive = location.pathname === item.path;
-            return (
-              <li key={index} className={`sidebar-item ${isActive ? 'active' : ''}`}>
-                <Link to={item.path} onClick={() => setSidebarOpen(false)}>
-                  {getIcon(item.icon)}
-                  <span>{item.label}</span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="sidebar-menu-wrapper" style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '16px' }}>
+          {(() => {
+            const groupedMenu = {};
+            menuItems.forEach((item) => {
+              let cat = '';
+              if (menuItems.length > 8) {
+                const label = item.label.toLowerCase();
+                if (label.includes('dashboard')) {
+                  cat = 'Core Workspace';
+                } else if (
+                  label.includes('student') ||
+                  label.includes('teacher') ||
+                  label.includes('class') ||
+                  label.includes('academic')
+                ) {
+                  cat = 'Core Modules';
+                } else if (
+                  label.includes('timetable') ||
+                  label.includes('attendance') ||
+                  label.includes('exam') ||
+                  label.includes('result') ||
+                  label.includes('homework')
+                ) {
+                  cat = 'Academic Hub';
+                } else {
+                  cat = 'System Admin';
+                }
+              } else {
+                cat = 'Menu';
+              }
+              if (!groupedMenu[cat]) groupedMenu[cat] = [];
+              groupedMenu[cat].push(item);
+            });
+
+            return Object.entries(groupedMenu).map(([category, items]) => (
+              <div key={category} className="menu-category-group" style={{ marginBottom: '16px' }}>
+                {category !== 'Menu' && category !== 'Core Workspace' && (
+                  <div className="menu-category-header" style={{
+                    fontSize: '0.75rem',
+                    fontWeight: '700',
+                    color: 'var(--text-muted)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '1px',
+                    padding: '8px 16px 4px',
+                    opacity: 0.8
+                  }}>{category}</div>
+                )}
+                <ul className="sidebar-menu" style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                  {items.map((item, index) => {
+                    const isActive = location.pathname === item.path;
+                    return (
+                      <li key={index} className={`sidebar-item ${isActive ? 'active' : ''}`}>
+                        <Link to={item.path} onClick={() => setSidebarOpen(false)}>
+                          {getIcon(item.icon)}
+                          <span>{item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ));
+          })()}
+        </div>
 
         <div className="sidebar-footer">
           <button 

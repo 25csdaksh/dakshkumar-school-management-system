@@ -15,8 +15,6 @@ export const AdminLayout = ({ children }) => {
     { label: 'Result Management', path: '/admin/results', icon: 'exams' },
     { label: 'Homework logs', path: '/admin/homework', icon: 'homework' },
     { label: 'Notice Board', path: '/admin/notices', icon: 'notices' },
-    { label: 'Library Management', path: '/admin/library', icon: 'library' },
-    { label: 'Hostel Management', path: '/admin/hostel', icon: 'hostel' },
     { label: 'Inventory Management', path: '/admin/inventory', icon: 'inventory' },
     { label: 'Transport & Fleet', path: '/admin/transport', icon: 'bus-tracking' },
     { label: 'Staff Leave Review', path: '/admin/leaves', icon: 'reports' },

@@ -20,6 +20,11 @@ const homeworkSchema = new mongoose.Schema({
     ref: 'Subject',
     required: true
   },
+  section: {
+    type: String,
+    required: true,
+    default: 'A'
+  },
   dueDate: {
     type: Date,
     required: true

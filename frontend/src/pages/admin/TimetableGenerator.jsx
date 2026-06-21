@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import academicService from '../../services/academicService.js';
 import { studentService } from '../../services/studentService.js';
-import { Clock, Plus, Trash, Save } from 'lucide-react';
+import { Calendar, Save, Trash2 } from 'lucide-react';
 
 export const TimetableGenerator = () => {
   const [classes, setClasses] = useState([]);
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSection, setSelectedSection] = useState('A');
-  const [selectedDay, setSelectedDay] = useState('Monday');
   const [subjects, setSubjects] = useState([]);
   const [teachers, setTeachers] = useState([]);
   
-  const [timetable, setTimetable] = useState([]);
-  const [newPeriod, setNewPeriod] = useState({ subject: '', teacher: '', startTime: '08:30', endTime: '09:20' });
+  const [grid, setGrid] = useState({});
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+
+  const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const defaultTimings = [
+    { startTime: '08:30', endTime: '09:20' },
+    { startTime: '09:20', endTime: '10:10' },
+    { startTime: '10:10', endTime: '11:00' },
+    { startTime: '11:15', endTime: '12:05' },
+    { startTime: '12:05', endTime: '12:55' },
+    { startTime: '12:55', endTime: '01:45' }
+  ];
 
   useEffect(() => {
     const initData = async () => {
@@ -40,36 +48,54 @@ export const TimetableGenerator = () => {
 
   useEffect(() => {
     if (selectedClass) {
-      loadClassTimetable();
+      loadWeeklyTimetable();
     }
-  }, [selectedClass, selectedSection, selectedDay]);
+  }, [selectedClass, selectedSection]);
 
-  const loadClassTimetable = async () => {
+  const loadWeeklyTimetable = async () => {
     try {
       setError('');
+      setMessage('');
       const data = await academicService.getTimetable(selectedClass, selectedSection);
-      // Filter for currently selected day
-      const dayData = data.find(t => t.day === selectedDay);
-      setTimetable(dayData ? dayData.periods : []);
+      
+      const initialGrid = {};
+      days.forEach(day => {
+        const dayRecord = data.find(r => r.day === day);
+        initialGrid[day] = Array.from({ length: 6 }, (_, index) => {
+          const defaultTiming = defaultTimings[index];
+          const periodRecord = dayRecord?.periods[index];
+          
+          return {
+            subject: periodRecord?.subject?._id || periodRecord?.subject || '',
+            teacher: periodRecord?.teacher?._id || periodRecord?.teacher || '',
+            startTime: periodRecord?.startTime || defaultTiming.startTime,
+            endTime: periodRecord?.endTime || defaultTiming.endTime
+          };
+        });
+      });
+      setGrid(initialGrid);
     } catch (err) {
       setError(err.message || 'Error fetching timetable records');
     }
   };
 
-  const handleAddPeriod = () => {
-    if (!newPeriod.subject || !newPeriod.teacher) {
-      setError('Please select both a subject and a teacher');
-      return;
-    }
-    
-    // Add period local
-    setTimetable([...timetable, newPeriod]);
-    setNewPeriod({ subject: '', teacher: '', startTime: '08:30', endTime: '09:20' });
-    setError('');
+  const handleCellChange = (day, periodIndex, field, value) => {
+    setGrid(prev => {
+      const updatedDay = [...prev[day]];
+      updatedDay[periodIndex] = {
+        ...updatedDay[periodIndex],
+        [field]: value
+      };
+      return {
+        ...prev,
+        [day]: updatedDay
+      };
+    });
   };
 
-  const handleRemovePeriod = (index) => {
-    setTimetable(timetable.filter((_, i) => i !== index));
+  const handleClearCell = (day, periodIndex) => {
+    handleCellChange(day, periodIndex, 'subject', '');
+    handleCellChange(day, periodIndex, 'teacher', '');
   };
 
   const handleSaveTimetable = async () => {
@@ -77,187 +103,154 @@ export const TimetableGenerator = () => {
       setMessage('');
       setError('');
       
+      const schedules = Object.entries(grid).map(([day, periods]) => {
+        const mappedPeriods = periods.map(p => ({
+          subject: p.subject || null,
+          teacher: p.teacher || null,
+          startTime: p.startTime,
+          endTime: p.endTime
+        })).filter(p => p.subject && p.teacher);
+
+        return {
+          day,
+          periods: mappedPeriods
+        };
+      });
+
       const payload = {
         classId: selectedClass,
         section: selectedSection,
-        day: selectedDay,
-        periods: timetable.map(p => ({
-          subject: p.subject._id || p.subject,
-          teacher: p.teacher._id || p.teacher,
-          startTime: p.startTime,
-          endTime: p.endTime
-        }))
+        schedules
       };
 
-      await academicService.saveTimetable(payload);
-      setMessage('Timetable saved successfully!');
-      loadClassTimetable();
+      await academicService.saveBulkTimetable(payload);
+      setMessage('Weekly timetable saved successfully!');
+      loadWeeklyTimetable();
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Failed to save timetable');
     }
   };
 
-  if (loading) return <div className="text-center mt-4"><h3>Loading Timetable Editor...</h3></div>;
+  if (loading) return <div className="text-center mt-4"><h3>Loading Timetable Matrix...</h3></div>;
 
   return (
     <div>
       <div style={{ marginBottom: '32px' }}>
         <h2>Timetable Generation & Management</h2>
-        <p style={{ color: 'var(--text-muted)' }}>Auto-arrange or plan schedules for grade levels and assignments.</p>
+        <p style={{ color: 'var(--text-muted)' }}>Configure a full 6-period weekly schedule (Monday–Saturday) for standard and division combinations.</p>
       </div>
 
       {message && <div style={{ background: 'var(--success-glow)', color: 'var(--success)', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>{message}</div>}
       {error && <div style={{ background: 'var(--danger-glow)', color: 'var(--danger)', padding: '12px', borderRadius: '8px', marginBottom: '20px' }}>{error}</div>}
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
-        
-        {/* Class Selection Options */}
-        <div className="glass-panel" style={{ padding: '24px', height: 'fit-content' }}>
-          <h3 style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Clock size={20} color="var(--primary)" />
-            <span>Select Target Layout</span>
-          </h3>
+      <div className="glass-panel" style={{ padding: '20px', marginBottom: '24px', display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
+        <div className="form-group" style={{ marginBottom: 0, flex: '1 1 200px' }}>
+          <label className="form-label">Grade / Class</label>
+          <select 
+            className="form-control"
+            value={selectedClass}
+            onChange={(e) => setSelectedClass(e.target.value)}
+          >
+            {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+          </select>
+        </div>
 
-          <div className="form-group">
-            <label className="form-label">Grade / Class</label>
-            <select 
-              className="form-control"
-              value={selectedClass}
-              onChange={(e) => setSelectedClass(e.target.value)}
-            >
-              {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
-            </select>
-          </div>
+        <div className="form-group" style={{ marginBottom: 0, flex: '1 1 150px' }}>
+          <label className="form-label">Division (Section)</label>
+          <select 
+            className="form-control"
+            value={selectedSection}
+            onChange={(e) => setSelectedSection(e.target.value)}
+          >
+            <option value="A">Section A</option>
+            <option value="B">Section B</option>
+            <option value="C">Section C</option>
+          </select>
+        </div>
 
-          <div className="form-group">
-            <label className="form-label">Section</label>
-            <select 
-              className="form-control"
-              value={selectedSection}
-              onChange={(e) => setSelectedSection(e.target.value)}
-            >
-              <option value="A">Section A</option>
-              <option value="B">Section B</option>
-              <option value="C">Section C</option>
-            </select>
-          </div>
+        <button className="btn btn-primary" onClick={handleSaveTimetable} style={{ height: '46px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <Save size={16} /> Save Weekly Timetable
+        </button>
+      </div>
 
-          <div className="form-group">
-            <label className="form-label">Day of the Week</label>
-            <select 
-              className="form-control"
-              value={selectedDay}
-              onChange={(e) => setSelectedDay(e.target.value)}
-            >
-              {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map(d => (
-                <option key={d} value={d}>{d}</option>
+      <div className="glass-panel" style={{ padding: '24px', overflowX: 'auto' }}>
+        <h3 style={{ marginBottom: '20px' }}>Weekly Matrix Grid</h3>
+
+        <table className="custom-table" style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th style={{ width: '100px' }}>Day</th>
+              {defaultTimings.map((time, idx) => (
+                <th key={idx} style={{ textAlign: 'center' }}>
+                  Period {idx + 1}
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 'normal' }}>
+                    {time.startTime} - {time.endTime}
+                  </div>
+                </th>
               ))}
-            </select>
-          </div>
-        </div>
+            </tr>
+          </thead>
+          <tbody>
+            {days.map(day => (
+              <tr key={day}>
+                <td style={{ fontWeight: 'bold', verticalAlign: 'middle', color: 'var(--text-main)' }}>{day}</td>
+                {grid[day]?.map((period, periodIndex) => (
+                  <td key={periodIndex} style={{ padding: '8px', minWidth: '150px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', background: 'var(--bg-app)', padding: '8px', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', position: 'relative' }}>
+                      <select
+                        className="timetable-grid-select"
+                        value={period.subject}
+                        onChange={(e) => handleCellChange(day, periodIndex, 'subject', e.target.value)}
+                      >
+                        <option value="">-- Subject --</option>
+                        {subjects.map(sub => (
+                          <option key={sub._id} value={sub._id}>{sub.name}</option>
+                        ))}
+                      </select>
 
-        {/* Timetable Planner Grid */}
-        <div className="glass-panel" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3>Planner Matrix - {selectedDay}s</h3>
-            <button className="btn btn-primary" onClick={handleSaveTimetable} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Save size={16} /> Save Changes
-            </button>
-          </div>
+                      <select
+                        className="timetable-grid-select"
+                        value={period.teacher}
+                        onChange={(e) => handleCellChange(day, periodIndex, 'teacher', e.target.value)}
+                      >
+                        <option value="">-- Teacher --</option>
+                        {teachers.map(teach => (
+                          <option key={teach._id} value={teach._id}>{teach.name}</option>
+                        ))}
+                      </select>
 
-          {/* Add period inline bar */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 0.8fr 0.8fr auto', gap: '10px', background: 'var(--bg-app)', padding: '16px', borderRadius: '10px', marginBottom: '20px', alignItems: 'end' }}>
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Subject</label>
-              <select 
-                className="form-control"
-                value={newPeriod.subject}
-                onChange={(e) => setNewPeriod({ ...newPeriod, subject: e.target.value })}
-              >
-                <option value="">Select...</option>
-                {subjects.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Teacher</label>
-              <select 
-                className="form-control"
-                value={newPeriod.teacher}
-                onChange={(e) => setNewPeriod({ ...newPeriod, teacher: e.target.value })}
-              >
-                <option value="">Select...</option>
-                {teachers.map(t => <option key={t._id} value={t._id}>{t.name}</option>)}
-              </select>
-            </div>
-
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">Start</label>
-              <input 
-                type="time" 
-                className="form-control"
-                value={newPeriod.startTime}
-                onChange={(e) => setNewPeriod({ ...newPeriod, startTime: e.target.value })}
-              />
-            </div>
-
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="form-label">End</label>
-              <input 
-                type="time" 
-                className="form-control"
-                value={newPeriod.endTime}
-                onChange={(e) => setNewPeriod({ ...newPeriod, endTime: e.target.value })}
-              />
-            </div>
-
-            <button className="btn btn-primary" onClick={handleAddPeriod} style={{ height: '46px' }}>
-              <Plus size={16} /> Add Period
-            </button>
-          </div>
-
-          {/* Matrix view table */}
-          <div className="table-responsive">
-            <table className="custom-table">
-              <thead>
-                <tr>
-                  <th>Period Timing</th>
-                  <th>Subject</th>
-                  <th>Assigned Teacher</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {timetable.length === 0 ? (
-                  <tr>
-                    <td colSpan="4" className="text-center" style={{ color: 'var(--text-muted)' }}>
-                      No periods configured for this day. Use the form above to add periods.
-                    </td>
-                  </tr>
-                ) : (
-                  timetable.map((period, index) => {
-                    const subName = subjects.find(s => s._id === (period.subject?._id || period.subject))?.name || 'Subject';
-                    const teachName = teachers.find(t => t._id === (period.teacher?._id || period.teacher))?.name || 'Faculty Member';
-                    
-                    return (
-                      <tr key={index}>
-                        <td><strong>{period.startTime} - {period.endTime}</strong></td>
-                        <td>{subName}</td>
-                        <td>{teachName}</td>
-                        <td>
-                          <button className="btn btn-danger" style={{ padding: '6px' }} onClick={() => handleRemovePeriod(index)}>
-                            <Trash size={14} />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
+                      {(period.subject || period.teacher) && (
+                        <button 
+                          onClick={() => handleClearCell(day, periodIndex)}
+                          style={{
+                            position: 'absolute',
+                            top: '-6px',
+                            right: '-6px',
+                            background: 'var(--danger)',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '16px',
+                            height: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            fontSize: '0.65rem',
+                            cursor: 'pointer',
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.2)'
+                          }}
+                          title="Clear Period"
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

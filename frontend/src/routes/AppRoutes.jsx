@@ -77,8 +77,6 @@ export const AppRoutes = () => {
               <Route path="results" element={<AdminResults />} />
               <Route path="homework" element={<AdminHomework />} />
               <Route path="notices" element={<AdminNotices />} />
-              <Route path="library" element={<AdminLibrary />} />
-              <Route path="hostel" element={<AdminHostel />} />
               <Route path="inventory" element={<AdminInventory />} />
               <Route path="transport" element={<AdminTransport />} />
               <Route path="leaves" element={<AdminLeaves />} />
