@@ -10,6 +10,7 @@ export const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   // Form states
+  const [name, setName] = useState(user?.name || '');
   const [phone, setPhone] = useState(user?.phone || '');
   const [address, setAddress] = useState(user?.address || user?.studentInfo?.address || '');
   const [parentName, setParentName] = useState(user?.studentInfo?.parentName || '');
@@ -37,6 +38,7 @@ export const Profile = () => {
 
     try {
       const formData = new FormData();
+      formData.append('name', name);
       formData.append('phone', phone);
       formData.append('address', address);
       if (password) {
@@ -124,7 +126,20 @@ export const Profile = () => {
           </div>
 
           <div style={{ flexGrow: 1 }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: '700' }}>{user?.name}</h3>
+            {isEditing ? (
+              <div className="form-group" style={{ marginBottom: '8px' }}>
+                <input 
+                  type="text" 
+                  className="form-control" 
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)} 
+                  required
+                  style={{ fontSize: '1.25rem', fontWeight: '700', padding: '6px 12px', width: '100%', maxWidth: '300px' }}
+                />
+              </div>
+            ) : (
+              <h3 style={{ fontSize: '1.5rem', fontWeight: '700' }}>{name}</h3>
+            )}
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
               Student / Class Grade {user?.studentInfo?.classId?.name || 'Unassigned'}
             </span>
@@ -321,6 +336,7 @@ export const Profile = () => {
           <div style={{ display: 'flex', gap: '16px', justifyContent: 'flex-end', marginTop: '8px' }}>
             <button type="button" className="btn btn-secondary" onClick={() => {
               setIsEditing(false);
+              setName(user?.name || '');
               setPhone(user?.phone || '');
               setAddress(user?.address || user?.studentInfo?.address || '');
               setParentName(user?.studentInfo?.parentName || '');
