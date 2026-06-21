@@ -18,6 +18,7 @@ export const Classes = () => {
   const [className, setClassName] = useState('');
   const [classTeacher, setClassTeacher] = useState('');
   const [sectionsStr, setSectionsStr] = useState('A, B');
+  const [sectionTeachers, setSectionTeachers] = useState({}); // section -> teacherId
 
   // Subject Form states
   const [targetClassId, setTargetClassId] = useState('');
@@ -55,6 +56,7 @@ export const Classes = () => {
     setClassName('');
     setSectionsStr('A, B');
     if (teachers.length > 0) setClassTeacher(teachers[0]._id);
+    setSectionTeachers({});
     setError('');
     setSuccess('');
     setShowClassModal(true);
@@ -65,6 +67,15 @@ export const Classes = () => {
     setClassName(cls.name);
     setSectionsStr(cls.sections.join(', '));
     setClassTeacher(cls.classTeacher?._id || cls.classTeacher || '');
+    
+    const stMap = {};
+    if (cls.sectionTeachers) {
+      cls.sectionTeachers.forEach(st => {
+        stMap[st.section] = st.teacher?._id || st.teacher || '';
+      });
+    }
+    setSectionTeachers(stMap);
+    
     setError('');
     setSuccess('');
     setShowClassModal(true);
@@ -76,6 +87,9 @@ export const Classes = () => {
     setSuccess('');
 
     const sections = sectionsStr.split(',').map(s => s.trim()).filter(s => s !== '');
+    const finalSectionTeachers = Object.entries(sectionTeachers)
+      .filter(([sec, teacherId]) => sections.includes(sec) && teacherId)
+      .map(([sec, teacherId]) => ({ section: sec, teacher: teacherId }));
     
     try {
       if (editingClassId) {
@@ -83,7 +97,8 @@ export const Classes = () => {
         await studentService.updateClass(editingClassId, {
           name: className,
           sections,
-          classTeacher: classTeacher || undefined
+          classTeacher: classTeacher || undefined,
+          sectionTeachers: finalSectionTeachers
         });
         setSuccess(`Class "${className}" updated successfully.`);
       } else {
@@ -91,13 +106,15 @@ export const Classes = () => {
         await studentService.createClass({
           name: className,
           sections,
-          classTeacher: classTeacher || undefined
+          classTeacher: classTeacher || undefined,
+          sectionTeachers: finalSectionTeachers
         });
         setSuccess(`Class "${className}" created successfully.`);
       }
       setShowClassModal(false);
       setClassName('');
       setSectionsStr('A, B');
+      setSectionTeachers({});
       fetchData();
     } catch (err) {
       setError(err.message || 'Failed to process class.');
@@ -181,9 +198,20 @@ export const Classes = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '16px' }}>
                   <div>
                     <h3 style={{ fontSize: '1.25rem' }}>{c.name}</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-                      Class Teacher: <strong>{c.classTeacher?.name || 'Unassigned'}</strong>
-                    </p>
+                    {c.sectionTeachers && c.sectionTeachers.length > 0 ? (
+                      <div style={{ marginTop: '6px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                        <span style={{ display: 'block', fontWeight: '600', marginBottom: '2px' }}>Class Teachers:</span>
+                        <ul style={{ listStyle: 'none', paddingLeft: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          {c.sectionTeachers.map((st, idx) => (
+                            <li key={idx}>Sec {st.section}: <strong>{st.teacher?.name || 'Unassigned'}</strong></li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '4px' }}>
+                        Class Teacher: <strong>{c.classTeacher?.name || 'Unassigned'}</strong>
+                      </p>
+                    )}
                   </div>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     {c.sections.map((sec, idx) => (
@@ -280,7 +308,7 @@ export const Classes = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Class Teacher</label>
+                <label className="form-label">General Class Teacher (Fallback)</label>
                 <select 
                   className="form-control" 
                   value={classTeacher} 
@@ -292,6 +320,23 @@ export const Classes = () => {
                   ))}
                 </select>
               </div>
+
+              {/* Dynamic Section Class Teachers */}
+              {sectionsStr.split(',').map(s => s.trim()).filter(s => s !== '').map(sec => (
+                <div className="form-group" key={sec}>
+                  <label className="form-label">Class Teacher for Section {sec}</label>
+                  <select 
+                    className="form-control" 
+                    value={sectionTeachers[sec] || ''} 
+                    onChange={(e) => setSectionTeachers(prev => ({ ...prev, [sec]: e.target.value }))}
+                  >
+                    <option value="">Select Teacher (Optional)</option>
+                    {teachers.map(t => (
+                      <option key={t._id} value={t._id}>{t.name}</option>
+                    ))}
+                  </select>
+                </div>
+              ))}
 
               <button type="submit" className="btn btn-primary w-full mt-4">
                 {editingClassId ? 'Save Changes' : 'Create Class'}

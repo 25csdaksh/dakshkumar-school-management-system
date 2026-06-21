@@ -180,9 +180,14 @@ export const getAssignedClasses = async (req, res) => {
 // @desc    Teacher: Get students in a specific class
 export const getStudentsByClass = async (req, res) => {
   const { classId } = req.params;
+  const { section } = req.query;
 
   try {
-    const studentDocs = await Student.find({ classId }).populate('user', '-password');
+    const filter = { classId };
+    if (section) {
+      filter.section = section;
+    }
+    const studentDocs = await Student.find(filter).populate('user', '-password');
     
     const formatted = studentDocs.map(doc => {
       if (!doc.user) return null;
