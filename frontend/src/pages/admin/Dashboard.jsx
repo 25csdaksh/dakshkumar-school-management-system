@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { studentService } from '../../services/studentService.js';
+import { useNavigate } from 'react-router-dom';
 import { 
   Users, 
   GraduationCap, 
@@ -12,6 +13,7 @@ import {
 } from 'lucide-react';
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -102,6 +104,103 @@ export const Dashboard = () => {
         </div>
       </div>
 
+      {/* Quick Actions Panel */}
+      <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px' }}>
+        <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+          <PlusCircle size={20} color="var(--primary)" />
+          <span>Quick Actions</span>
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <button 
+            onClick={() => navigate('/admin/students')} 
+            className="glass-panel-interactive" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '10px', 
+              padding: '16px', 
+              background: 'var(--bg-app)', 
+              color: 'var(--text-main)', 
+              border: '1px solid var(--border-color)',
+              cursor: 'pointer', 
+              fontWeight: '600',
+              fontSize: '0.95rem',
+              borderRadius: '12px'
+            }}
+          >
+            <PlusCircle size={18} color="var(--primary)" />
+            <span>Add Student</span>
+          </button>
+          
+          <button 
+            onClick={() => navigate('/admin/teachers')} 
+            className="glass-panel-interactive" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '10px', 
+              padding: '16px', 
+              background: 'var(--bg-app)', 
+              color: 'var(--text-main)', 
+              border: '1px solid var(--border-color)',
+              cursor: 'pointer', 
+              fontWeight: '600',
+              fontSize: '0.95rem',
+              borderRadius: '12px'
+            }}
+          >
+            <PlusCircle size={18} color="var(--secondary)" />
+            <span>Add Teacher</span>
+          </button>
+
+          <button 
+            onClick={() => navigate('/admin/classes')} 
+            className="glass-panel-interactive" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '10px', 
+              padding: '16px', 
+              background: 'var(--bg-app)', 
+              color: 'var(--text-main)', 
+              border: '1px solid var(--border-color)',
+              cursor: 'pointer', 
+              fontWeight: '600',
+              fontSize: '0.95rem',
+              borderRadius: '12px'
+            }}
+          >
+            <PlusCircle size={18} color="var(--success)" />
+            <span>Add Class</span>
+          </button>
+
+          <button 
+            onClick={() => navigate('/admin/notices')} 
+            className="glass-panel-interactive" 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              gap: '10px', 
+              padding: '16px', 
+              background: 'var(--bg-app)', 
+              color: 'var(--text-main)', 
+              border: '1px solid var(--border-color)',
+              cursor: 'pointer', 
+              fontWeight: '600',
+              fontSize: '0.95rem',
+              borderRadius: '12px'
+            }}
+          >
+            <PlusCircle size={18} color="var(--warning)" />
+            <span>Add Notice</span>
+          </button>
+        </div>
+      </div>
+
       {/* Main Charts & Updates Grid */}
       <div className="dashboard-grid-2">
         
@@ -112,35 +211,60 @@ export const Dashboard = () => {
             <span>Financial Collections</span>
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '24px' }}>
-            <div style={{ background: 'var(--bg-app)', padding: '16px', borderRadius: '10px' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Total Invoiced</span>
-              <h4 style={{ fontSize: '1.4rem', color: 'var(--primary)', marginTop: '4px' }}>${financials.totalInvoiced}</h4>
+          <div style={{ display: 'flex', gap: '32px', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', marginTop: '12px' }}>
+            {/* Circular Donut Chart */}
+            <div style={{
+              width: '180px',
+              height: '180px',
+              borderRadius: '50%',
+              background: `conic-gradient(var(--success) 0% ${collectionRate}%, var(--danger) ${collectionRate}% 100%)`,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative',
+              boxShadow: 'var(--shadow-md)'
+            }}>
+              <div style={{
+                width: '130px',
+                height: '130px',
+                borderRadius: '50%',
+                backgroundColor: 'var(--bg-card)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: '600' }}>Collection</span>
+                <strong style={{ fontSize: '1.75rem', color: 'var(--text-main)', fontWeight: '700', marginTop: '2px' }}>{collectionRate}%</strong>
+              </div>
             </div>
-            <div style={{ background: 'var(--bg-app)', padding: '16px', borderRadius: '10px' }}>
-              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Total Collected</span>
-              <h4 style={{ fontSize: '1.4rem', color: 'var(--success)', marginTop: '4px' }}>${financials.totalCollected}</h4>
-            </div>
-          </div>
 
-          {/* Premium CSS Chart */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', justifyContent: 'between', fontSize: '0.85rem' }}>
-              <span>Collection Progress</span>
-              <strong>{collectionRate}%</strong>
+            {/* Legend / Metrics */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flexGrow: 1, minWidth: '180px' }}>
+              <div style={{ borderLeft: '4px solid var(--success)', paddingLeft: '12px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>Completed (Collected)</div>
+                <h4 style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginTop: '4px' }}>
+                  ${financials.totalCollected} 
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '6px', fontWeight: 'normal' }}>
+                    ({collectionRate}%)
+                  </span>
+                </h4>
+              </div>
+
+              <div style={{ borderLeft: '4px solid var(--danger)', paddingLeft: '12px' }}>
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: '500' }}>Pending (Outstanding)</div>
+                <h4 style={{ fontSize: '1.25rem', color: 'var(--text-main)', marginTop: '4px' }}>
+                  ${financials.totalPending} 
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginLeft: '6px', fontWeight: 'normal' }}>
+                    ({100 - collectionRate}%)
+                  </span>
+                </h4>
+              </div>
+
+              <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                Overall Invoiced: <strong>${financials.totalInvoiced}</strong>
+              </div>
             </div>
-            <div style={{ background: 'var(--border-color)', height: '12px', borderRadius: '6px', overflow: 'hidden' }}>
-              <div style={{ 
-                background: 'linear-gradient(to right, var(--primary), var(--secondary))', 
-                width: `${collectionRate}%`, 
-                height: '100%',
-                borderRadius: '6px',
-                transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)'
-              }}></div>
-            </div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '4px' }}>
-              Pending Balance to be collected: ${financials.totalPending}
-            </span>
           </div>
         </div>
 

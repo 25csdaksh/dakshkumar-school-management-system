@@ -85,7 +85,7 @@ export const BaseLayout = ({ children, menuItems }) => {
             color: 'white',
             fontWeight: 'bold',
             fontSize: '1.2rem'
-          }}>S</div>
+          }}>E</div>
           <span className="logo-text">EduSphere ERP</span>
         </div>
 
@@ -129,7 +129,7 @@ export const BaseLayout = ({ children, menuItems }) => {
                   <div className="menu-category-header" style={{
                     fontSize: '0.75rem',
                     fontWeight: '700',
-                    color: 'var(--text-muted)',
+                    color: 'var(--sidebar-muted, var(--text-muted))',
                     textTransform: 'uppercase',
                     letterSpacing: '1px',
                     padding: '8px 16px 4px',

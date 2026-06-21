@@ -2,7 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { studentService } from '../../services/studentService.js';
-import { LogIn, HelpCircle, UserPlus, ArrowLeft } from 'lucide-react';
+import { 
+  LogIn, 
+  HelpCircle, 
+  UserPlus, 
+  ArrowLeft, 
+  User, 
+  Lock, 
+  Mail, 
+  Phone, 
+  Award, 
+  Book, 
+  Sun, 
+  Moon 
+} from 'lucide-react';
 
 export const Login = () => {
   const [isRegister, setIsRegister] = useState(false);
@@ -26,7 +39,7 @@ export const Login = () => {
 
   const [classes, setClasses] = useState([]);
 
-  const { login, register } = useAuth();
+  const { login, register, theme, toggleTheme } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -100,290 +113,532 @@ export const Login = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-blob login-blob-1"></div>
-      <div className="login-blob login-blob-2"></div>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      backgroundColor: 'var(--bg-app)',
+      fontFamily: 'var(--font-body)',
+      position: 'relative',
+      overflowX: 'hidden'
+    }}>
+      {/* Floating Theme Switcher */}
+      <button 
+        onClick={toggleTheme} 
+        style={{
+          position: 'absolute',
+          top: '20px',
+          right: '20px',
+          width: '40px',
+          height: '40px',
+          borderRadius: '50%',
+          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--bg-card)',
+          color: 'var(--text-main)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          boxShadow: 'var(--shadow-sm)',
+          zIndex: 100,
+          transition: 'all 0.2s ease'
+        }}
+        title="Toggle Theme"
+      >
+        {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+      </button>
 
-      <div className="login-card glass-panel" style={{ maxWidth: isRegister ? '540px' : '420px', transition: 'all 0.3s ease' }}>
-        <div className="login-header">
+      {/* Main Container Workspace */}
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '40px 20px',
+        zIndex: 10
+      }}>
+        <div className="glass-panel" style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          width: '100%',
+          maxWidth: '1000px',
+          borderRadius: '24px',
+          overflow: 'hidden',
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-color)',
+          background: 'var(--glass-bg)',
+          backdropFilter: 'var(--glass-blur)'
+        }}>
+          
+          {/* LEFT COLUMN: BRANDING & ILLUSTRATION */}
           <div style={{
-            background: 'var(--primary)',
-            width: '56px',
-            height: '56px',
-            borderRadius: '16px',
-            display: 'inline-flex',
-            alignItems: 'center',
+            padding: '48px',
+            display: 'flex',
+            flexDirection: 'column',
             justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '1.8rem',
-            marginBottom: '16px'
-          }}>S</div>
-          <h2>{isRegister ? 'Create Account' : 'Welcome to EduSphere'}</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>School ERP Administration & Portals</p>
-        </div>
-
-        {error && (
-          <div style={{
-            background: 'var(--danger-glow)',
-            color: 'var(--danger)',
-            padding: '12px',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '0.85rem',
-            marginBottom: '20px',
-            textAlign: 'center',
-            border: '1px solid var(--danger)'
+            backgroundColor: 'var(--bg-card)',
+            borderRight: '1px solid var(--border-color)',
+            position: 'relative'
           }}>
-            {error}
+            {/* Logo */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#ffffff',
+                fontWeight: '700',
+                fontSize: '1rem'
+              }}>E</div>
+              <span style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: '1.25rem',
+                fontWeight: '700',
+                color: 'var(--text-main)',
+                letterSpacing: '0.5px'
+              }}>EduSphere ERP</span>
+            </div>
+
+            {/* Academic Quote */}
+            <div style={{ marginBottom: '24px' }}>
+              <span style={{ fontSize: '2rem', color: 'var(--primary)', fontFamily: 'serif', lineHeight: 1, display: 'block' }}>“</span>
+              <h2 style={{
+                fontSize: '1.35rem',
+                fontWeight: '600',
+                lineHeight: '1.5',
+                color: 'var(--text-main)',
+                marginTop: '-8px',
+                fontFamily: 'var(--font-heading)'
+              }}>
+                The beautiful thing about learning is that no one can take it away from you
+              </h2>
+            </div>
+
+            {/* High-Fidelity SVG Graduation Illustration */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1 }}>
+              <svg viewBox="0 0 400 320" style={{ width: '280px', height: 'auto', display: 'block' }}>
+                <defs>
+                  <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="var(--primary)" />
+                    <stop offset="100%" stopColor="var(--secondary)" />
+                  </linearGradient>
+                </defs>
+                {/* Academic Hat Mortarboard */}
+                <path d="M200,50 L340,110 L200,170 L60,110 Z" fill="url(#primaryGrad)" />
+                <path d="M200,60 L320,110 L200,160 L80,110 Z" fill="#1e293b" opacity="0.85" />
+                <path d="M200,110 L200,150" stroke="#f59e0b" strokeWidth="3" />
+                
+                {/* Skull cap part */}
+                <path d="M130,140 L130,190 C130,220 270,220 270,190 L270,140" fill="#0f172a" />
+                
+                {/* Tassel */}
+                <path d="M200,110 Q100,120 90,170" stroke="#f59e0b" strokeWidth="3" fill="none" />
+                <circle cx="90" cy="170" r="6" fill="#f59e0b" />
+                <path d="M90,170 L85,210 L95,210 Z" fill="#f59e0b" />
+
+                {/* Diploma Scroll */}
+                <g transform="translate(140, 190) rotate(-12)">
+                  <rect x="0" y="0" width="140" height="40" rx="8" fill="var(--bg-app)" stroke="var(--border-color)" strokeWidth="2.5" />
+                  <ellipse cx="140" cy="20" rx="6" ry="20" fill="var(--border-color)" />
+                  <ellipse cx="0" cy="20" rx="6" ry="20" fill="var(--border-color)" />
+                  <rect x="60" y="0" width="20" height="40" fill="#ef4444" />
+                  <circle cx="70" cy="20" r="5" fill="#f59e0b" />
+                  <path d="M70,40 L60,56 L70,50 L80,56 Z" fill="#ef4444" />
+                </g>
+              </svg>
+            </div>
           </div>
-        )}
 
-        {!isRegister ? (
-          /* ==========================================
-             LOGIN FORM
-             ========================================== */
-          <form onSubmit={handleLoginSubmit}>
-            <div className="form-group">
-              <label className="form-label" htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                className="form-control"
-                placeholder="name@schoolerp.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+          {/* RIGHT COLUMN: CURVED LOGIN CARD */}
+          <div style={{
+            padding: '48px 36px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            position: 'relative'
+          }}>
+            {/* Floating Error Alert */}
+            {error && (
+              <div style={{
+                background: 'var(--danger-glow)',
+                color: 'var(--danger)',
+                padding: '12px',
+                borderRadius: '8px',
+                fontSize: '0.8rem',
+                border: '1px solid var(--danger)',
+                marginBottom: '20px',
+                textAlign: 'center'
+              }}>{error}</div>
+            )}
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                className="form-control"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-
-            <button type="submit" className="btn btn-primary w-full mt-4" disabled={loading}>
-              <LogIn size={18} />
-              <span>{loading ? 'Logging you in...' : 'Sign In'}</span>
-            </button>
-
-            <div style={{ textAlign: 'center', marginTop: '16px', fontSize: '0.9rem' }}>
-              <span style={{ color: 'var(--text-muted)' }}>New to EduSphere? </span>
-              <button 
-                type="button" 
-                onClick={() => setIsRegister(true)} 
-                style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 'bold', cursor: 'pointer', padding: 0 }}
-              >
-                Register Here
-              </button>
-            </div>
-          </form>
-        ) : (
-          /* ==========================================
-             REGISTRATION FORM
-             ========================================== */
-          <form onSubmit={handleRegisterSubmit}>
-            <div className="form-group">
-              <label className="form-label">Select Your Role</label>
-              <select 
-                className="form-control" 
-                value={regRole} 
-                onChange={(e) => setRegRole(e.target.value)}
-              >
-                <option value="student">Student</option>
-                <option value="parent">Parent</option>
-                <option value="teacher">Teacher</option>
-              </select>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Full Name</label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="e.g. John Doe"
-                value={regName}
-                onChange={(e) => setRegName(e.target.value)}
-                required
-              />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-              <div className="form-group">
-                <label className="form-label">Email</label>
-                <input
-                  type="email"
-                  className="form-control"
-                  placeholder="e.g. email@domain.com"
-                  value={regEmail}
-                  onChange={(e) => setRegEmail(e.target.value)}
-                  required
-                />
+            {/* Redesigned Card Container */}
+            <div className="glass-panel" style={{
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border-color)',
+              borderRadius: '20px',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-md)',
+              position: 'relative',
+              paddingBottom: '32px'
+            }}>
+              
+              {/* Curve Accent Top Banner */}
+              <div style={{ position: 'relative', width: '100%', height: '70px', overflow: 'hidden' }}>
+                <svg viewBox="0 0 100 35" preserveAspectRatio="none" style={{ width: '100%', height: '100%', fill: 'var(--primary)' }}>
+                  <path d="M0,0 L100,0 L100,20 Q50,35 0,20 Z" />
+                </svg>
+                {/* Floating Avatar Circular Frame */}
+                <div style={{
+                  position: 'absolute',
+                  bottom: '-25px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--bg-card)',
+                  border: '3px solid var(--bg-card)',
+                  boxShadow: 'var(--shadow-md)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  zIndex: 20
+                }}>
+                  <div style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '50%',
+                    background: 'var(--primary-glow)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'var(--primary)'
+                  }}>
+                    <User size={26} />
+                  </div>
+                </div>
               </div>
-              <div className="form-group">
-                <label className="form-label">Password</label>
-                <input
-                  type="password"
-                  className="form-control"
-                  placeholder="••••••••"
-                  value={regPassword}
-                  onChange={(e) => setRegPassword(e.target.value)}
-                  required
-                />
+
+              {/* Form Title */}
+              <div style={{ textAlign: 'center', marginTop: '36px', padding: '0 24px', marginBottom: '24px' }}>
+                <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: 'var(--text-main)' }}>
+                  {isRegister ? 'Create Credentials' : 'Welcome Portal'}
+                </h3>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  {isRegister ? 'Register academic record' : 'Sign in to access tools'}
+                </span>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label className="form-label">Phone contact (Optional)</label>
-              <input
-                type="text"
-                className="form-control"
-                placeholder="e.g. +91 9988776655"
-                value={regPhone}
-                onChange={(e) => setRegPhone(e.target.value)}
-              />
-            </div>
-
-            {/* Role Specific Fields */}
-            {regRole === 'student' && (
-              <div style={{ padding: '16px', background: 'var(--border-color)', borderRadius: '8px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div>
-                    <label className="form-label" style={{ fontSize: '0.8rem' }}>Roll Number</label>
+              {/* Form Controls */}
+              {!isRegister ? (
+                /* LOGIN SCREEN */
+                <form onSubmit={handleLoginSubmit} style={{ padding: '0 32px' }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderBottom: '1px solid var(--border-color)',
+                    padding: '8px 0',
+                    marginBottom: '20px'
+                  }}>
+                    <span style={{ marginRight: '12px', color: 'var(--primary)' }}>
+                      <Mail size={16} />
+                    </span>
                     <input 
-                      type="text" 
-                      className="form-control" 
-                      placeholder="e.g. 104"
-                      value={regRollNumber}
-                      onChange={e => setRegRollNumber(e.target.value)}
+                      type="email"
+                      placeholder="Email Address"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                       required
+                      style={{
+                        border: 'none',
+                        background: 'transparent',
+                        outline: 'none',
+                        width: '100%',
+                        fontSize: '0.9rem',
+                        color: 'var(--text-main)'
+                      }}
                     />
                   </div>
-                  <div>
-                    <label className="form-label" style={{ fontSize: '0.8rem' }}>Grade Class</label>
+
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderBottom: '1px solid var(--border-color)',
+                    padding: '8px 0',
+                    marginBottom: '20px'
+                  }}>
+                    <span style={{ marginRight: '12px', color: 'var(--primary)' }}>
+                      <Lock size={16} />
+                    </span>
+                    <input 
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      style={{
+                        border: 'none',
+                        background: 'transparent',
+                        outline: 'none',
+                        width: '100%',
+                        fontSize: '0.9rem',
+                        color: 'var(--text-main)'
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', marginBottom: '24px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', cursor: 'pointer' }}>
+                      <input type="checkbox" style={{ accentColor: 'var(--primary)' }} />
+                      <span>Remember me</span>
+                    </label>
+                    <a href="#forgot" onClick={(e) => { e.preventDefault(); alert('Please contact administrative support to reset your passwords.'); }} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>
+                      Forgot Password?
+                    </a>
+                  </div>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '12px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <LogIn size={16} />
+                      <span>{loading ? 'Entering...' : 'Sign In'}</span>
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      onClick={() => setIsRegister(true)} 
+                      style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8rem', textAlign: 'center', marginTop: '4px' }}
+                    >
+                      New User? <strong style={{ color: 'var(--primary)' }}>Sign Up</strong>
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                /* REGISTRATION SCREEN */
+                <form onSubmit={handleRegisterSubmit} style={{ padding: '0 24px', maxHeight: '380px', overflowY: 'auto', paddingRight: '6px' }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Select Role</label>
                     <select 
                       className="form-control" 
-                      value={regClassId}
-                      onChange={e => setRegClassId(e.target.value)}
-                      required
+                      value={regRole} 
+                      onChange={(e) => setRegRole(e.target.value)}
+                      style={{ fontSize: '0.85rem', padding: '8px' }}
                     >
-                      {classes.length === 0 ? (
-                        <option value="">No classes found</option>
-                      ) : (
-                        classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)
-                      )}
+                      <option value="student">Student</option>
+                      <option value="parent">Parent</option>
+                      <option value="teacher">Teacher</option>
                     </select>
                   </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Full Name</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={regName}
+                      onChange={(e) => setRegName(e.target.value)}
+                      required
+                      style={{ fontSize: '0.85rem', padding: '8px' }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Email Address</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={regEmail}
+                      onChange={(e) => setRegEmail(e.target.value)}
+                      required
+                      style={{ fontSize: '0.85rem', padding: '8px' }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Password</label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      required
+                      style={{ fontSize: '0.85rem', padding: '8px' }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Phone</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={regPhone}
+                      onChange={(e) => setRegPhone(e.target.value)}
+                      style={{ fontSize: '0.85rem', padding: '8px' }}
+                    />
+                  </div>
+
+                  {/* Student Details */}
+                  {regRole === 'student' && (
+                    <div style={{ background: 'var(--bg-app)', padding: '12px', borderRadius: '8px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Roll Number</label>
+                        <input 
+                          type="text" 
+                          className="form-control" 
+                          value={regRollNumber}
+                          onChange={e => setRegRollNumber(e.target.value)}
+                          required
+                          style={{ fontSize: '0.8rem', padding: '6px' }}
+                        />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Class Grade</label>
+                        <select 
+                          className="form-control" 
+                          value={regClassId}
+                          onChange={e => setRegClassId(e.target.value)}
+                          required
+                          style={{ fontSize: '0.8rem', padding: '6px' }}
+                        >
+                          {classes.map(c => <option key={c._id} value={c._id}>{c.name}</option>)}
+                        </select>
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Parent's Email</label>
+                        <input 
+                          type="email" 
+                          className="form-control" 
+                          value={regParentEmail}
+                          onChange={e => setRegParentEmail(e.target.value)}
+                          required
+                          style={{ fontSize: '0.8rem', padding: '6px' }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Teacher Details */}
+                  {regRole === 'teacher' && (
+                    <div style={{ background: 'var(--bg-app)', padding: '12px', borderRadius: '8px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Qualifications</label>
+                        <input 
+                          type="text" 
+                          className="form-control" 
+                          value={regQualification}
+                          onChange={e => setRegQualification(e.target.value)}
+                          required
+                          style={{ fontSize: '0.8rem', padding: '6px' }}
+                        />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Specialty Subject</label>
+                        <input 
+                          type="text" 
+                          className="form-control" 
+                          value={regSubject}
+                          onChange={e => setRegSubject(e.target.value)}
+                          required
+                          style={{ fontSize: '0.8rem', padding: '6px' }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+                    <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '10px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                      <UserPlus size={16} />
+                      <span>{loading ? 'Creating...' : 'Register'}</span>
+                    </button>
+                    
+                    <button 
+                      type="button" 
+                      onClick={() => setIsRegister(false)}
+                      className="btn btn-secondary w-full"
+                      style={{ padding: '8px', borderRadius: '8px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
+                    >
+                      <ArrowLeft size={14} />
+                      <span>Back to Sign In</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            {/* Quick Demo Fill Container */}
+            {showDemoBox && !isRegister && (
+              <div className="glass-panel" style={{
+                marginTop: '20px',
+                padding: '16px',
+                borderRadius: '16px',
+                border: '1px dashed var(--primary)',
+                background: 'var(--bg-card)'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '0.75rem', marginBottom: '8px', color: 'var(--primary)' }}>
+                  <HelpCircle size={14} />
+                  <span>Autofill Demo Accounts</span>
                 </div>
-                <div>
-                  <label className="form-label" style={{ fontSize: '0.8rem' }}>Parent's Email Address</label>
-                  <input 
-                    type="email" 
-                    className="form-control" 
-                    placeholder="parent@schoolerp.com"
-                    value={regParentEmail}
-                    onChange={e => setRegParentEmail(e.target.value)}
-                    required
-                  />
-                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '4px', display: 'block' }}>
-                    Links this student automatically to parent accounts.
-                  </span>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <button 
+                    onClick={() => handleFillDemo('admin@schoolerp.com', 'admin123')}
+                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
+                  >
+                    Admin Account
+                  </button>
+                  <button 
+                    onClick={() => handleFillDemo('teacher1@schoolerp.com', 'teacher123')}
+                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
+                  >
+                    Teacher Account
+                  </button>
+                  <button 
+                    onClick={() => handleFillDemo('student1@schoolerp.com', 'student123')}
+                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
+                  >
+                    Student Account
+                  </button>
+                  <button 
+                    onClick={() => handleFillDemo('parent1@schoolerp.com', 'parent123')}
+                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
+                  >
+                    Parent Account
+                  </button>
                 </div>
               </div>
             )}
-
-            {regRole === 'teacher' && (
-              <div style={{ padding: '16px', background: 'var(--border-color)', borderRadius: '8px', marginBottom: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                <div>
-                  <label className="form-label" style={{ fontSize: '0.8rem' }}>Qualifications</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="e.g. Master of Science in Physics"
-                    value={regQualification}
-                    onChange={e => setRegQualification(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ fontSize: '0.8rem' }}>Specialty Subject</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    placeholder="e.g. Mathematics"
-                    value={regSubject}
-                    onChange={e => setRegSubject(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-            )}
-
-            <button type="submit" className="btn btn-primary w-full mt-4" disabled={loading}>
-              <UserPlus size={18} />
-              <span>{loading ? 'Creating Account...' : 'Sign Up'}</span>
-            </button>
-
-            <button 
-              type="button" 
-              className="btn btn-secondary w-full mt-2" 
-              onClick={() => setIsRegister(false)}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
-            >
-              <ArrowLeft size={16} /> Back to Sign In
-            </button>
-          </form>
-        )}
-
-        {showDemoBox && !isRegister && (
-          <div style={{
-            marginTop: '24px',
-            padding: '16px',
-            background: 'var(--primary-glow)',
-            borderRadius: 'var(--radius-md)',
-            border: '1px dashed var(--primary)',
-            fontSize: '0.8rem'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold', marginBottom: '8px', color: 'var(--primary)' }}>
-              <HelpCircle size={16} />
-              <span>Demo Accounts (Click to Fill)</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div 
-                style={{ cursor: 'pointer', padding: '4px', borderRadius: '4px', background: 'var(--bg-app)' }}
-                onClick={() => handleFillDemo('admin@schoolerp.com', 'admin123')}
-              >
-                <strong>Admin:</strong> admin@schoolerp.com (pwd: admin123)
-              </div>
-              <div 
-                style={{ cursor: 'pointer', padding: '4px', borderRadius: '4px', background: 'var(--bg-app)' }}
-                onClick={() => handleFillDemo('teacher1@schoolerp.com', 'teacher123')}
-              >
-                <strong>Teacher:</strong> teacher1@schoolerp.com (pwd: teacher123)
-              </div>
-              <div 
-                style={{ cursor: 'pointer', padding: '4px', borderRadius: '4px', background: 'var(--bg-app)' }}
-                onClick={() => handleFillDemo('student1@schoolerp.com', 'student123')}
-              >
-                <strong>Student:</strong> student1@schoolerp.com (pwd: student123)
-              </div>
-              <div 
-                style={{ cursor: 'pointer', padding: '4px', borderRadius: '4px', background: 'var(--bg-app)' }}
-                onClick={() => handleFillDemo('parent1@schoolerp.com', 'parent123')}
-              >
-                <strong>Parent:</strong> parent1@schoolerp.com (pwd: parent123)
-              </div>
-            </div>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* FOOTER BAR */}
+      <footer style={{
+        backgroundColor: '#111827',
+        color: '#9ca3af',
+        padding: '24px 20px',
+        fontSize: '0.75rem',
+        textAlign: 'center',
+        zIndex: 10,
+        borderTop: '1px solid #1f2937'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: '24px',
+          flexWrap: 'wrap',
+          marginBottom: '12px'
+        }}>
+          <a href="#terms" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</a>
+          <a href="#privacy" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Policy & Procedures</a>
+          <a href="#contact" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Contact Us</a>
+          <a href="#help" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Help</a>
+        </div>
+        <div>
+          &copy; {new Date().getFullYear()} EduSphere ERP. All Rights Reserved.
+        </div>
+      </footer>
     </div>
   );
 };
