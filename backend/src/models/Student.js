@@ -6,6 +6,10 @@ const studentSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  name: {
+    type: String,
+    trim: true
+  },
   rollNumber: {
     type: String,
     required: true,
@@ -32,6 +36,10 @@ const studentSchema = new mongoose.Schema({
     trim: true
   },
   parentPhone: {
+    type: String,
+    trim: true
+  },
+  address: {
     type: String,
     trim: true
   },
@@ -68,6 +76,21 @@ const studentSchema = new mongoose.Schema({
   }]
 }, {
   timestamps: true
+});
+
+studentSchema.pre('save', async function (next) {
+  if (this.isNew || this.isModified('user') || this.isModified('name')) {
+    try {
+      const User = mongoose.model('User');
+      const user = await User.findById(this.user);
+      if (user) {
+        this.name = user.name;
+      }
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
 });
 
 const Student = mongoose.model('Student', studentSchema);

@@ -68,6 +68,7 @@ export const loginUser = async (req, res) => {
       email: user.email,
       role: roleName, // return role name string for frontend compatibility
       phone: user.phone,
+      address: user.address,
       profilePicture: user.profilePicture,
       studentInfo,
       teacherInfo,
@@ -110,6 +111,7 @@ export const getMe = async (req, res) => {
       email: user.email,
       role: roleName,
       phone: user.phone,
+      address: user.address,
       profilePicture: user.profilePicture,
       studentInfo,
       teacherInfo
@@ -128,6 +130,7 @@ export const updateProfile = async (req, res) => {
     if (user) {
       user.name = req.body.name || user.name;
       user.phone = req.body.phone || user.phone;
+      user.address = req.body.address || user.address;
       
       if (req.body.password) {
         user.password = req.body.password;
@@ -146,22 +149,40 @@ export const updateProfile = async (req, res) => {
       if (roleName === 'student') {
         const studentDoc = await Student.findOne({ user: updatedUser._id }).populate('classId');
         if (studentDoc) {
-          studentInfo = {
-            rollNumber: studentDoc.rollNumber,
-            classId: studentDoc.classId,
-            parentEmail: studentDoc.parentEmail
-          };
+          studentDoc.name = updatedUser.name;
+          if (req.body.studentInfo) {
+            try {
+              const info = typeof req.body.studentInfo === 'string' ? JSON.parse(req.body.studentInfo) : req.body.studentInfo;
+              studentDoc.parentName = info.parentName !== undefined ? info.parentName : studentDoc.parentName;
+              studentDoc.parentPhone = info.parentPhone !== undefined ? info.parentPhone : studentDoc.parentPhone;
+              studentDoc.parentEmail = info.parentEmail !== undefined ? info.parentEmail : studentDoc.parentEmail;
+              studentDoc.bloodGroup = info.bloodGroup !== undefined ? info.bloodGroup : studentDoc.bloodGroup;
+              studentDoc.aadhaarNumber = info.aadhaarNumber !== undefined ? info.aadhaarNumber : studentDoc.aadhaarNumber;
+              studentDoc.address = info.address !== undefined ? info.address : studentDoc.address;
+              await studentDoc.save();
+            } catch (err) {
+              console.error('Failed to parse studentInfo', err);
+            }
+          }
+          studentInfo = studentDoc;
         }
       } else if (roleName === 'teacher') {
         const teacherDoc = await Teacher.findOne({ user: updatedUser._id });
         if (teacherDoc) {
           teacherDoc.name = updatedUser.name;
+          if (req.body.teacherInfo) {
+            try {
+              const info = typeof req.body.teacherInfo === 'string' ? JSON.parse(req.body.teacherInfo) : req.body.teacherInfo;
+              teacherDoc.qualification = info.qualification !== undefined ? info.qualification : teacherDoc.qualification;
+              teacherDoc.address = info.address !== undefined ? info.address : teacherDoc.address;
+              teacherDoc.gender = info.gender !== undefined ? info.gender : teacherDoc.gender;
+              teacherDoc.bloodGroup = info.bloodGroup !== undefined ? info.bloodGroup : teacherDoc.bloodGroup;
+            } catch (err) {
+              console.error('Failed to parse teacherInfo', err);
+            }
+          }
           await teacherDoc.save();
-          teacherInfo = {
-            qualification: teacherDoc.qualification,
-            subjects: teacherDoc.subjects,
-            salary: teacherDoc.salary
-          };
+          teacherInfo = teacherDoc;
         }
       }
 
@@ -171,6 +192,7 @@ export const updateProfile = async (req, res) => {
         email: updatedUser.email,
         role: roleName,
         phone: updatedUser.phone,
+        address: updatedUser.address,
         profilePicture: updatedUser.profilePicture,
         studentInfo,
         teacherInfo,
@@ -228,6 +250,7 @@ export const registerUser = async (req, res) => {
       const { rollNumber, classId, parentEmail } = studentInfo || {};
       const student = new Student({
         user: savedUser._id,
+        name: savedUser.name,
         rollNumber: rollNumber || `ST-${Math.floor(100 + Math.random() * 900)}`,
         classId: classId || undefined,
         parentEmail

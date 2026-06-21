@@ -7,7 +7,8 @@ export const StudentLayout = ({ children }) => {
     { label: 'My Grades', path: '/student/results', icon: 'exams' },
     { label: 'Attendance logs', path: '/student/attendance', icon: 'attendance' },
     { label: 'Homework', path: '/student/homework', icon: 'homework' },
-    { label: 'GPS Bus Tracking', path: '/student/bus-tracking', icon: 'bus-tracking' }
+    { label: 'GPS Bus Tracking', path: '/student/bus-tracking', icon: 'bus-tracking' },
+    { label: 'My Profile', path: '/student/profile', icon: 'settings' }
   ];
 
   return <BaseLayout menuItems={menuItems}>{children}</BaseLayout>;

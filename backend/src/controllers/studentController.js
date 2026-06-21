@@ -38,6 +38,7 @@ export const createStudent = async (req, res) => {
     // 2. Create Student details
     const student = new Student({
       user: savedUser._id,
+      name: savedUser.name,
       rollNumber,
       classId,
       section: section || 'A',
@@ -304,6 +305,7 @@ export const updateStudent = async (req, res) => {
     const student = await Student.findOne({ user: id });
     if (!student) return res.status(404).json({ message: 'Student details not found' });
 
+    student.name = user.name;
     student.rollNumber = rollNumber || student.rollNumber;
     student.classId = classId || student.classId;
     student.section = section || student.section;

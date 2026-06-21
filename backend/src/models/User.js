@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  address: {
+    type: String,
+    trim: true
+  },
   profilePicture: {
     type: String,
     default: 'http://localhost:5001/uploads/avatar.png'

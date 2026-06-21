@@ -76,6 +76,17 @@ export const academicService = {
       body: JSON.stringify(hwData)
     });
   },
+  updateHomework: async (id, hwData) => {
+    return await apiCall(`/academic/homework/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(hwData)
+    });
+  },
+  deleteHomework: async (id) => {
+    return await apiCall(`/academic/homework/${id}`, {
+      method: 'DELETE'
+    });
+  },
 
   // Promotion
   promoteStudents: async (promotionData) => {

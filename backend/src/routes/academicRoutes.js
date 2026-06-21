@@ -17,7 +17,9 @@ import {
   updateExam,
   deleteExam,
   getHomeworkList,
-  createHomework
+  createHomework,
+  updateHomework,
+  deleteHomework
 } from '../controllers/academicController.js';
 
 const router = express.Router();
@@ -42,6 +44,8 @@ router.delete('/exams/:id', protect, authorize('admin'), deleteExam);
 // Homework Logs
 router.get('/homework', protect, getHomeworkList);
 router.post('/homework', protect, authorize('admin', 'teacher'), createHomework);
+router.put('/homework/:id', protect, authorize('admin', 'teacher'), updateHomework);
+router.delete('/homework/:id', protect, authorize('admin', 'teacher'), deleteHomework);
 
 // Promotions
 router.post('/promote', protect, authorize('admin'), promoteStudents);

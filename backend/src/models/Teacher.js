@@ -31,6 +31,18 @@ const teacherSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  address: {
+    type: String,
+    trim: true
+  },
+  gender: {
+    type: String,
+    trim: true
+  },
+  bloodGroup: {
+    type: String,
+    trim: true
+  },
   salaryDetails: {
     basic: { type: Number, default: 0 },
     allowances: { type: Number, default: 0 },

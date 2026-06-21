@@ -29,7 +29,7 @@ import {
   deleteNotice
 } from './controllers/adminController.js';
 
-import { createStudent, getStudents, deleteStudent } from './controllers/studentController.js';
+import { createStudent, getStudents, deleteStudent, getParentDashboard } from './controllers/studentController.js';
 import { createTeacher, getTeachers, deleteTeacher } from './controllers/teacherController.js';
 import { getActivityLogs } from './controllers/authController.js';
 import Student from './models/Student.js';
@@ -64,10 +64,7 @@ app.use('/api/auth', authRoutes);
 // 2. STUDENT & PARENT ROUTES
 // ==========================================
 app.use('/api/student', studentRoutes);
-app.get('/api/parent/children', protect, authorize('parent'), (req, res, next) => {
-  // Proxy child-link to studentRoutes format
-  next();
-}, studentRoutes);
+app.get('/api/parent/children', protect, authorize('parent'), getParentDashboard);
 
 // ==========================================
 // 3. TEACHER ROUTES

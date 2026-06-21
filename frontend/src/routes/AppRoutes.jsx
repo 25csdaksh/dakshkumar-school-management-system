@@ -40,18 +40,21 @@ import TeacherAttendance from '../pages/teacher/Attendance.jsx';
 import TeacherMarks from '../pages/teacher/Marks.jsx';
 import TeacherHomework from '../pages/teacher/Homework.jsx';
 import TeacherLeaves from '../pages/teacher/Leaves.jsx';
+import TeacherProfile from '../pages/teacher/Profile.jsx';
 
 // Student Pages
 import StudentDashboard from '../pages/student/Dashboard.jsx';
 import StudentResults from '../pages/student/Results.jsx';
 import StudentAttendance from '../pages/student/Attendance.jsx';
 import StudentHomework from '../pages/student/Homework.jsx';
+import StudentProfile from '../pages/student/Profile.jsx';
 
 // Parent Pages
 import ParentDashboard from '../pages/parent/Dashboard.jsx';
 import ParentResults from '../pages/parent/Results.jsx';
 import ParentAttendance from '../pages/parent/Attendance.jsx';
 import ParentFees from '../pages/parent/Fees.jsx';
+import ParentProfile from '../pages/parent/Profile.jsx';
 
 export const AppRoutes = () => {
   return (
@@ -99,6 +102,7 @@ export const AppRoutes = () => {
               <Route path="marks" element={<TeacherMarks />} />
               <Route path="homework" element={<TeacherHomework />} />
               <Route path="leaves" element={<TeacherLeaves />} />
+              <Route path="profile" element={<TeacherProfile />} />
               <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Routes>
           </TeacherLayout>
@@ -115,6 +119,7 @@ export const AppRoutes = () => {
               <Route path="attendance" element={<StudentAttendance />} />
               <Route path="homework" element={<StudentHomework />} />
               <Route path="bus-tracking" element={<BusTracking />} />
+              <Route path="profile" element={<StudentProfile />} />
               <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Routes>
           </StudentLayout>
@@ -131,6 +136,7 @@ export const AppRoutes = () => {
               <Route path="attendance" element={<ParentAttendance />} />
               <Route path="fees" element={<ParentFees />} />
               <Route path="bus-tracking" element={<BusTracking />} />
+              <Route path="profile" element={<ParentProfile />} />
               <Route path="*" element={<Navigate to="dashboard" replace />} />
             </Routes>
           </ParentLayout>

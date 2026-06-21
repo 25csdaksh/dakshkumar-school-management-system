@@ -89,6 +89,44 @@
   --glass-border: rgba(46, 46, 51, 0.8);
 }
 
+[data-theme="parent-light"] {
+  /* 60% Dominant Canvas: Off-white light gray */
+  --bg-app: #EDEDED;
+
+  /* 30% Structural: deep slate teal for sidebar, white for cards, border gray */
+  --bg-sidebar: #0E1F22;
+  --bg-card: #ffffff;
+  --border-color: #d1d5db;
+  --text-main: #0E1F22; /* Primary text matches dark slate */
+  --text-muted: #4b5563;
+  --text-inverse: #ffffff;
+
+  /* 10% Accent Callouts: Gold highlights */
+  --primary: #E2CD8A; /* Champagne Gold */
+  --primary-glow: rgba(226, 205, 138, 0.2);
+  --secondary: #0E1F22;
+  --secondary-glow: rgba(14, 31, 34, 0.12);
+
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.12);
+  --warning: #f59e0b;
+  --warning-glow: rgba(245, 158, 11, 0.12);
+  --danger: #ef4444;
+  --danger-glow: rgba(239, 68, 68, 0.12);
+
+  --sidebar-text: rgba(255, 255, 255, 0.95);
+  --sidebar-muted: rgba(255, 255, 255, 0.5);
+  --sidebar-active-bg: #E2CD8A;
+
+  --shadow-sm: 0 2px 8px rgba(14, 31, 34, 0.05);
+  --shadow-md: 0 8px 20px rgba(14, 31, 34, 0.08);
+  --shadow-lg: 0 16px 36px rgba(14, 31, 34, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(14, 31, 34, 0.1);
+  --glass-blur: blur(12px);
+}
+
 /* Base Styles */
 * {
   margin: 0;

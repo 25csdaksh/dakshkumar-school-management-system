@@ -318,6 +318,40 @@ export const createHomework = async (req, res) => {
   }
 };
 
+export const updateHomework = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, description, classId, subjectId, section, dueDate } = req.body;
+
+    const updated = await Homework.findByIdAndUpdate(
+      id,
+      { title, description, classId, subjectId, section: section || 'A', dueDate },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Homework not found' });
+    }
+
+    res.json({ message: 'Homework updated successfully', data: updated });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const deleteHomework = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deleted = await Homework.findByIdAndDelete(id);
+    if (!deleted) {
+      return res.status(404).json({ message: 'Homework not found' });
+    }
+    res.json({ message: 'Homework deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // ==========================================
 // 8. WEEKLY BULK TIMETABLE SAVE
 // ==========================================
