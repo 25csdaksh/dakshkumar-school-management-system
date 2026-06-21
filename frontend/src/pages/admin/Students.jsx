@@ -18,6 +18,7 @@ export const Students = () => {
   const [phone, setPhone] = useState('');
   const [rollNumber, setRollNumber] = useState('');
   const [classId, setClassId] = useState('');
+  const [section, setSection] = useState('A');
   const [parentEmail, setParentEmail] = useState('');
   
   const [error, setError] = useState('');
@@ -50,6 +51,8 @@ export const Students = () => {
     setPassword('');
     setPhone('');
     setRollNumber('');
+    if (classes.length > 0) setClassId(classes[0]._id);
+    setSection('A');
     setParentEmail('');
     setError('');
     setSuccess('');
@@ -64,6 +67,7 @@ export const Students = () => {
     setPhone(student.phone || '');
     setRollNumber(student.studentInfo?.rollNumber || '');
     setClassId(student.studentInfo?.classId?._id || student.studentInfo?.classId || '');
+    setSection(student.studentInfo?.section || 'A');
     setParentEmail(student.studentInfo?.parentEmail || '');
     setError('');
     setSuccess('');
@@ -87,6 +91,7 @@ export const Students = () => {
       studentInfo: {
         rollNumber,
         classId,
+        section,
         parentEmail
       }
     };
@@ -184,9 +189,16 @@ export const Students = () => {
                     <td><strong style={{ color: 'var(--text-main)' }}>{student.name}</strong></td>
                     <td>{student.studentInfo?.rollNumber || '-'}</td>
                     <td>
-                      <span className="badge badge-primary">
-                        {student.studentInfo?.classId?.name || 'Unassigned'}
-                      </span>
+                      <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                        <span className="badge badge-primary">
+                          {student.studentInfo?.classId?.name || 'Unassigned'}
+                        </span>
+                        {student.studentInfo?.section && (
+                          <span className="badge badge-secondary">
+                            Sec {student.studentInfo.section}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -276,7 +288,7 @@ export const Students = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
                 <div className="form-group">
                   <label className="form-label">Roll Number</label>
                   <input 
@@ -297,6 +309,19 @@ export const Students = () => {
                   >
                     {classes.map(c => (
                       <option key={c._id} value={c._id}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Division (Section)</label>
+                  <select 
+                    className="form-control" 
+                    value={section} 
+                    onChange={(e) => setSection(e.target.value)}
+                    required
+                  >
+                    {(classes.find(c => c._id === classId)?.sections || ['A', 'B', 'C']).map(sec => (
+                      <option key={sec} value={sec}>Section {sec}</option>
                     ))}
                   </select>
                 </div>
@@ -357,7 +382,7 @@ export const Students = () => {
 
               <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '4px' }}>{selectedStudent.name}</h3>
               <span className="badge badge-primary" style={{ marginBottom: '20px' }}>
-                {selectedStudent.studentInfo?.classId?.name || 'Grade Cohort'}
+                {(selectedStudent.studentInfo?.classId?.name || 'Grade Cohort') + (selectedStudent.studentInfo?.section ? ` - Sec ${selectedStudent.studentInfo.section}` : '')}
               </span>
 
               <div style={{ width: '100%', fontSize: '0.9rem', display: 'flex', flexDirection: 'column', gap: '8px', borderTop: '1px solid var(--border-color)', paddingTop: '16px' }}>

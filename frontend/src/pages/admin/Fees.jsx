@@ -10,6 +10,8 @@ export const Fees = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [filterClass, setFilterClass] = useState('');
+  const [filterSection, setFilterSection] = useState('');
 
   // Modal controls
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
@@ -133,76 +135,135 @@ export const Fees = () => {
           <h4>Loading billing ledgers...</h4>
         </div>
       ) : (
-        <div className="glass-panel table-responsive">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Invoice Title</th>
-                <th>Student</th>
-                <th>Total Bill</th>
-                <th>Paid Amount</th>
-                <th>Balance Due</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.length === 0 ? (
+        <>
+          {/* Filters bar */}
+          <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '24px', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+            <div className="form-group" style={{ marginBottom: 0, flex: '1 1 200px' }}>
+              <label className="form-label">Filter by Standard (Class)</label>
+              <select 
+                className="form-control"
+                value={filterClass}
+                onChange={(e) => setFilterClass(e.target.value)}
+              >
+                <option value="">All Classes</option>
+                {classes.map(c => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="form-group" style={{ marginBottom: 0, flex: '1 1 150px' }}>
+              <label className="form-label">Filter by Division (Section)</label>
+              <select 
+                className="form-control"
+                value={filterSection}
+                onChange={(e) => setFilterSection(e.target.value)}
+              >
+                <option value="">All Sections</option>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+                <option value="C">Section C</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="glass-panel table-responsive">
+            <table className="custom-table">
+              <thead>
                 <tr>
-                  <td colSpan="8" className="text-center" style={{ color: 'var(--text-muted)' }}>
-                    No invoices generated yet.
-                  </td>
+                  <th>Invoice Title</th>
+                  <th>Student</th>
+                  <th>Total Bill</th>
+                  <th>Paid Amount</th>
+                  <th>Balance Due</th>
+                  <th>Due Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
                 </tr>
-              ) : (
-                invoices.map((inv) => {
-                  const balance = inv.amount - inv.amountPaid;
-                  return (
-                    <tr key={inv._id}>
-                      <td><strong style={{ color: 'var(--text-main)' }}>{inv.title}</strong></td>
-                      <td>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span>{inv.student?.name || 'Unknown Student'}</span>
-                          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            Roll: {inv.student?.studentInfo?.rollNumber || '-'}
+              </thead>
+              <tbody>
+                {(() => {
+                  const filteredInvoices = invoices.filter(inv => {
+                    if (filterClass && inv.student?.studentInfo?.classId !== filterClass) {
+                      return false;
+                    }
+                    if (filterSection && inv.student?.studentInfo?.section !== filterSection) {
+                      return false;
+                    }
+                    return true;
+                  });
+
+                  if (filteredInvoices.length === 0) {
+                    return (
+                      <tr>
+                        <td colSpan="8" className="text-center" style={{ color: 'var(--text-muted)' }}>
+                          No invoices found matching selected filters.
+                        </td>
+                      </tr>
+                    );
+                  }
+
+                  return filteredInvoices.map((inv) => {
+                    const balance = inv.amount - inv.amountPaid;
+                    return (
+                      <tr key={inv._id}>
+                        <td><strong style={{ color: 'var(--text-main)' }}>{inv.title}</strong></td>
+                        <td>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                            <span style={{ fontWeight: '500' }}>{inv.student?.name || 'Unknown Student'}</span>
+                            <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                                Roll: {inv.student?.studentInfo?.rollNumber || '-'}
+                              </span>
+                              {inv.student?.studentInfo?.classId && (
+                                <span className="badge badge-primary" style={{ padding: '2px 6px', fontSize: '0.7rem' }}>
+                                  {classes.find(c => c._id === inv.student.studentInfo.classId)?.name || 'Class'}
+                                </span>
+                              )}
+                              {inv.student?.studentInfo?.section && (
+                                <span className="badge badge-secondary" style={{ padding: '2px 6px', fontSize: '0.7rem' }}>
+                                  Sec {inv.student.studentInfo.section}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+                        <td>${inv.amount}</td>
+                        <td style={{ color: 'var(--success)' }}>${inv.amountPaid || 0}</td>
+                        <td style={{ color: balance > 0 ? 'var(--danger)' : 'var(--success)' }}>
+                          ${balance}
+                        </td>
+                        <td>{new Date(inv.dueDate).toLocaleDateString()}</td>
+                        <td>
+                          <span className={`badge ${
+                            inv.status === 'Paid' ? 'badge-success' : 
+                            inv.status === 'Partially Paid' ? 'badge-warning' : 'badge-danger'
+                          }`}>
+                            {inv.status}
                           </span>
-                        </div>
-                      </td>
-                      <td>${inv.amount}</td>
-                      <td style={{ color: 'var(--success)' }}>${inv.amountPaid || 0}</td>
-                      <td style={{ color: balance > 0 ? 'var(--danger)' : 'var(--success)' }}>
-                        ${balance}
-                      </td>
-                      <td>{new Date(inv.dueDate).toLocaleDateString()}</td>
-                      <td>
-                        <span className={`badge ${
-                          inv.status === 'Paid' ? 'badge-success' : 
-                          inv.status === 'Partially Paid' ? 'badge-warning' : 'badge-danger'
-                        }`}>
-                          {inv.status}
-                        </span>
-                      </td>
-                      <td>
-                        {inv.status !== 'Paid' ? (
-                          <button 
-                            className="btn btn-secondary" 
-                            style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
-                            onClick={() => handleOpenPayment(inv)}
-                          >
-                            <CreditCard size={14} />
-                            <span>Collect</span>
-                          </button>
-                        ) : (
-                          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Completed</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                        </td>
+                        <td>
+                          {inv.status !== 'Paid' ? (
+                            <button 
+                              className="btn btn-secondary" 
+                              style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              onClick={() => handleOpenPayment(inv)}
+                            >
+                              <CreditCard size={14} />
+                              <span>Collect</span>
+                            </button>
+                          ) : (
+                            <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Completed</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  });
+                })()}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
 
       {/* New Invoice Modal */}

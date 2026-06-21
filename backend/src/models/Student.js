@@ -16,6 +16,11 @@ const studentSchema = new mongoose.Schema({
     ref: 'Class',
     required: true
   },
+  section: {
+    type: String,
+    required: true,
+    default: 'A'
+  },
   parentEmail: {
     type: String,
     required: true,

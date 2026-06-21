@@ -155,6 +155,8 @@ export const updateProfile = async (req, res) => {
       } else if (roleName === 'teacher') {
         const teacherDoc = await Teacher.findOne({ user: updatedUser._id });
         if (teacherDoc) {
+          teacherDoc.name = updatedUser.name;
+          await teacherDoc.save();
           teacherInfo = {
             qualification: teacherDoc.qualification,
             subjects: teacherDoc.subjects,
@@ -254,6 +256,7 @@ export const registerUser = async (req, res) => {
 
       const teacher = new Teacher({
         user: savedUser._id,
+        name: savedUser.name,
         qualification: qualification || 'Qualified Teacher',
         subjects: subjectIds,
         salary: 0 // starting registered teacher salary

@@ -11,7 +11,7 @@ import Homework from '../models/Homework.js';
 // @desc    Admin: Register a new student
 export const createStudent = async (req, res) => {
   const { name, email, password, phone, studentInfo } = req.body;
-  const { rollNumber, classId, parentEmail } = studentInfo || {};
+  const { rollNumber, classId, parentEmail, section } = studentInfo || {};
 
   try {
     const userExists = await User.findOne({ email });
@@ -40,6 +40,7 @@ export const createStudent = async (req, res) => {
       user: savedUser._id,
       rollNumber,
       classId,
+      section: section || 'A',
       parentEmail
     });
     await student.save();
@@ -53,6 +54,7 @@ export const createStudent = async (req, res) => {
       studentInfo: {
         rollNumber,
         classId,
+        section: student.section,
         parentEmail
       }
     });
@@ -80,6 +82,7 @@ export const getStudents = async (req, res) => {
         studentInfo: {
           rollNumber: doc.rollNumber,
           classId: doc.classId,
+          section: doc.section || 'A',
           parentEmail: doc.parentEmail
         }
       };
@@ -287,7 +290,7 @@ export const getStudentHomework = async (req, res) => {
 export const updateStudent = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone, studentInfo } = req.body;
-  const { rollNumber, classId, parentEmail, parentName, parentPhone, bloodGroup, aadhaarNumber } = studentInfo || {};
+  const { rollNumber, classId, parentEmail, parentName, parentPhone, bloodGroup, aadhaarNumber, section } = studentInfo || {};
 
   try {
     const user = await User.findById(id);
@@ -303,6 +306,7 @@ export const updateStudent = async (req, res) => {
 
     student.rollNumber = rollNumber || student.rollNumber;
     student.classId = classId || student.classId;
+    student.section = section || student.section;
     student.parentEmail = parentEmail || student.parentEmail;
     student.parentName = parentName || student.parentName;
     student.parentPhone = parentPhone || student.parentPhone;

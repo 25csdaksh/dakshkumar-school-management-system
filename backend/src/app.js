@@ -32,6 +32,8 @@ import {
 import { createStudent, getStudents, deleteStudent } from './controllers/studentController.js';
 import { createTeacher, getTeachers, deleteTeacher } from './controllers/teacherController.js';
 import { getActivityLogs } from './controllers/authController.js';
+import Student from './models/Student.js';
+import Teacher from './models/Teacher.js';
 
 const app = express();
 

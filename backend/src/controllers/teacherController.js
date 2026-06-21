@@ -51,6 +51,7 @@ export const createTeacher = async (req, res) => {
     // 3. Create Teacher details
     const teacher = new Teacher({
       user: savedUser._id,
+      name: savedUser.name,
       qualification,
       subjects: subjectIds,
       salary: Number(salary) || 0,
@@ -86,6 +87,14 @@ export const getTeachers = async (req, res) => {
     const teacherDocs = await Teacher.find({})
       .populate('user', '-password')
       .populate('subjects');
+
+    // Self-healing: sync teacher names back into MongoDB Teacher collection if missing
+    for (const doc of teacherDocs) {
+      if (doc.user && (!doc.name || doc.name !== doc.user.name)) {
+        doc.name = doc.user.name;
+        await doc.save();
+      }
+    }
 
     const formatted = teacherDocs.map(doc => {
       if (!doc.user) return null;
@@ -300,6 +309,7 @@ export const updateTeacher = async (req, res) => {
     const teacher = await Teacher.findOne({ user: id });
     if (!teacher) return res.status(404).json({ message: 'Teacher details not found' });
 
+    teacher.name = name || user.name;
     teacher.qualification = qualification || teacher.qualification;
     teacher.salary = salary !== undefined ? Number(salary) : teacher.salary;
     teacher.designation = designation || teacher.designation;

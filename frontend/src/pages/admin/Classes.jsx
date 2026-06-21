@@ -255,14 +255,17 @@ export const Classes = () => {
             <form onSubmit={handleCreateClass}>
               <div className="form-group">
                 <label className="form-label">Class Name</label>
-                <input 
-                  type="text" 
+                <select 
                   className="form-control" 
                   value={className} 
-                  onChange={(e) => setClassName(e.target.value)} 
-                  placeholder="e.g. Grade 11"
-                  required 
-                />
+                  onChange={(e) => setClassName(e.target.value)}
+                  required
+                >
+                  <option value="">-- Select Grade --</option>
+                  {Array.from({ length: 10 }, (_, i) => `Grade ${i + 1}`).map(g => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="form-group">

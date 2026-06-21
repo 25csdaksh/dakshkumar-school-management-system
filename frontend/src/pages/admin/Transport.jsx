@@ -48,11 +48,41 @@ export const Transport = () => {
     }
   };
 
+  const formatVehicleNumber = (val) => {
+    let cleaned = val.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+    let state = cleaned.slice(0, 2).replace(/[^A-Z]/g, '');
+    let rto = cleaned.slice(2, 4).replace(/[^0-9]/g, '');
+    
+    let remaining = cleaned.slice(4);
+    let digitIndex = remaining.search(/[0-9]/);
+    let series = '';
+    let number = '';
+    if (digitIndex !== -1) {
+      series = remaining.slice(0, digitIndex).replace(/[^A-Z]/g, '');
+      number = remaining.slice(digitIndex).replace(/[^0-9]/g, '');
+    } else {
+      series = remaining.replace(/[^A-Z]/g, '');
+    }
+    
+    let formatted = '';
+    if (state) formatted += state;
+    if (rto) formatted += '-' + rto;
+    if (series) formatted += '-' + series;
+    if (number) formatted += '-' + number;
+    return formatted;
+  };
+
   const handleCreateVehicle = async (e) => {
     e.preventDefault();
     try {
       setMessage('');
       setError('');
+
+      const vehicleRegex = /^[A-Z]{2}-\d{2}-[A-Z]{1,2}-\d{4}$/;
+      if (!vehicleRegex.test(newVehicle.vehicleNumber)) {
+        setError('Vehicle number must be in standard Indian format (e.g., GJ-01-XX-1234 or GJ-01-X-1234).');
+        return;
+      }
       
       const payload = {
         vehicleNumber: newVehicle.vehicleNumber,
@@ -146,7 +176,7 @@ export const Transport = () => {
                 placeholder="e.g. GJ-01-XX-0000" 
                 className="form-control"
                 value={newVehicle.vehicleNumber}
-                onChange={(e) => setNewVehicle({ ...newVehicle, vehicleNumber: e.target.value })}
+                onChange={(e) => setNewVehicle({ ...newVehicle, vehicleNumber: formatVehicleNumber(e.target.value) })}
                 required
               />
             </div>

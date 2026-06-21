@@ -6,6 +6,10 @@ const teacherSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  name: {
+    type: String,
+    trim: true
+  },
   qualification: {
     type: String,
     required: true
@@ -34,6 +38,21 @@ const teacherSchema = new mongoose.Schema({
   }
 }, {
   timestamps: true
+});
+
+teacherSchema.pre('save', async function (next) {
+  if (this.isNew || this.isModified('user')) {
+    try {
+      const User = mongoose.model('User');
+      const user = await User.findById(this.user);
+      if (user) {
+        this.name = user.name;
+      }
+    } catch (err) {
+      return next(err);
+    }
+  }
+  next();
 });
 
 const Teacher = mongoose.model('Teacher', teacherSchema);

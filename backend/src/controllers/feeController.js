@@ -55,12 +55,16 @@ export const getFeeInvoices = async (req, res) => {
     const studentDocs = await Student.find({});
     const studentMap = {};
     studentDocs.forEach(s => {
-      studentMap[s.user.toString()] = s.rollNumber;
+      studentMap[s.user.toString()] = {
+        rollNumber: s.rollNumber,
+        classId: s.classId ? s.classId.toString() : null,
+        section: s.section || 'A'
+      };
     });
 
     const formatted = invoices.map(inv => {
       if (!inv.student) return null;
-      const rollNumber = studentMap[inv.student._id.toString()] || '-';
+      const sInfo = studentMap[inv.student._id.toString()] || { rollNumber: '-', classId: null, section: 'A' };
       
       // Late Fee calculation (Rs 10 per day late after due date)
       let lateFee = 0;
@@ -83,7 +87,11 @@ export const getFeeInvoices = async (req, res) => {
           _id: inv.student._id,
           name: inv.student.name,
           email: inv.student.email,
-          studentInfo: { rollNumber }
+          studentInfo: { 
+            rollNumber: sInfo.rollNumber,
+            classId: sInfo.classId,
+            section: sInfo.section
+          }
         }
       };
     }).filter(i => i !== null);

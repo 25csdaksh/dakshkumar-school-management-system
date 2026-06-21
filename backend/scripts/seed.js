@@ -95,6 +95,17 @@ const seedData = async () => {
     const parentRole = await new Role({ name: 'parent', permissions: [] }).save();
     console.log('Roles seeded.');
 
+    // Seed Classes Grade 1 to Grade 10
+    console.log('Seeding Classes Grade 1 to Grade 10...');
+    for (let i = 1; i <= 10; i++) {
+      const clsName = `Grade ${i}`;
+      await new Class({
+        name: clsName,
+        sections: ['A', 'B', 'C']
+      }).save();
+    }
+    console.log('Classes Grade 1 to Grade 10 seeded.');
+
     // 3. Seed Admin account
     const adminUser = await new User({
       name: 'School Admin',
