@@ -22,6 +22,16 @@ import Hostel from '../src/models/Hostel.js';
 import Inventory from '../src/models/Inventory.js';
 import ActivityLog from '../src/models/ActivityLog.js';
 
+import dns from 'dns';
+
+// Force DNS resolution to use Google's Public DNS to resolve MongoDB Atlas SRV records
+try {
+  dns.setServers(['8.8.8.8', '8.8.4.4']);
+  console.log('DNS Resolver set to Google Public DNS (8.8.8.8) for seeding');
+} catch (dnsErr) {
+  console.warn('Could not set custom DNS resolver:', dnsErr.message);
+}
+
 dotenv.config();
 
 const seedData = async () => {
