@@ -1122,8 +1122,39 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+.login-grid-container {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+.login-left-col {
+  padding: 48px;
+  border-right: 1px solid var(--border-color);
+}
+.login-right-col {
+  padding: 48px 36px;
+}
+.login-illustration-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
 /* Universal Responsive Grid and Layout Overrides for Mobile Viewports */
 @media (max-width: 768px) {
+  .login-grid-container {
+    grid-template-columns: 1fr !important;
+  }
+  .login-left-col {
+    padding: 32px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+  .login-right-col {
+    padding: 32px 20px !important;
+  }
+  .login-illustration-container {
+    display: none !important;
+  }
   /* Override any 2-column, 3-column, or multi-column inline grid to single column on mobile */
   div[style*="grid-template-columns: 1fr 1fr"],
   div[style*="grid-template-columns: 1fr 2fr"],

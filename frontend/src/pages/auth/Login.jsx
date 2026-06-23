@@ -157,9 +157,8 @@ export const Login = () => {
         padding: '40px 20px',
         zIndex: 10
       }}>
-        <div className="glass-panel" style={{
+        <div className="glass-panel login-grid-container" style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           width: '100%',
           maxWidth: '1000px',
           borderRadius: '24px',
@@ -171,13 +170,11 @@ export const Login = () => {
         }}>
           
           {/* LEFT COLUMN: BRANDING & ILLUSTRATION */}
-          <div style={{
-            padding: '48px',
+          <div className="login-left-col" style={{
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
             backgroundColor: 'var(--bg-card)',
-            borderRight: '1px solid var(--border-color)',
             position: 'relative'
           }}>
             {/* Logo */}
@@ -219,7 +216,7 @@ export const Login = () => {
             </div>
 
             {/* High-Fidelity SVG Graduation Illustration */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1 }}>
+            <div className="login-illustration-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 1 }}>
               <svg viewBox="0 0 400 320" style={{ width: '280px', height: 'auto', display: 'block' }}>
                 <defs>
                   <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -254,7 +251,7 @@ export const Login = () => {
           </div>
 
           {/* RIGHT COLUMN: CURVED LOGIN CARD */}
-          <div style={{
+          <div className="login-right-col" style={{
             padding: '48px 36px',
             display: 'flex',
             flexDirection: 'column',
