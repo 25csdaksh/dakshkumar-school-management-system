@@ -411,7 +411,7 @@ export const importStudents = async (req, res) => {
       // Resolve class (handles resolving numeric class like "1" to "Grade 1")
       let searchPattern = className.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       if (!isNaN(className)) {
-        searchPattern = `(Grade|Class\\s+)?${className}`;
+        searchPattern = `(Grade|Class)?\\s*${className}`;
       }
       const classDoc = await Class.findOne({ name: new RegExp('^' + searchPattern + '$', 'i') });
       if (!classDoc) {
