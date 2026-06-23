@@ -106,20 +106,29 @@ export const BaseLayout = ({ children, menuItems }) => {
 
       {/* Sidebar Layout */}
       <aside className={`sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}>
-        <div className="sidebar-logo">
-          <div style={{
-            background: 'var(--primary)',
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontWeight: 'bold',
-            fontSize: '1.2rem'
-          }}>E</div>
-          <span className="logo-text">EduSphere ERP</span>
+        <div className="sidebar-logo" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div style={{
+              background: 'var(--primary)',
+              width: '40px',
+              height: '40px',
+              borderRadius: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: '1.2rem'
+            }}>E</div>
+            <span className="logo-text">EduSphere ERP</span>
+          </div>
+          <button 
+            className="mobile-sidebar-close" 
+            onClick={() => setSidebarOpen(false)}
+            title="Close Sidebar"
+          >
+            <X size={20} />
+          </button>
         </div>
 
         <div className="sidebar-menu-wrapper" style={{ flexGrow: 1, overflowY: 'auto', paddingRight: '4px', marginBottom: '16px' }}>
@@ -297,7 +306,7 @@ export const BaseLayout = ({ children, menuItems }) => {
                 alt="Profile" 
                 className="user-avatar"
               />
-              <div className="user-details" style={{ display: 'none' }}>
+              <div className="user-details">
                 <span className="user-name">{user?.name || 'Loading...'}</span>
                 <span className="user-role">{user?.role || ''}</span>
               </div>

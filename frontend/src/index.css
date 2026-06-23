@@ -248,6 +248,10 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
 }
 
+.mobile-sidebar-close {
+  display: none;
+}
+
 /* Collapsed Sidebar Styles */
 .sidebar.collapsed {
   width: 80px;
@@ -834,6 +838,27 @@ h1, h2, h3, h4, h5, h6 {
   .content-body {
     padding: 20px;
   }
+
+  .user-details {
+    display: none !important;
+  }
+
+  .mobile-sidebar-close {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: var(--sidebar-text);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-fast);
+  }
+  .mobile-sidebar-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
 }
 
 /* Notices / Post list */
@@ -892,6 +917,8 @@ h1, h2, h3, h4, h5, h6 {
 .modal-content {
   width: 90%;
   max-width: 500px;
+  max-height: 90dvh;
+  overflow-y: auto;
   padding: 32px;
   background: var(--bg-card);
   border: 1px solid var(--glass-border);
@@ -1021,5 +1048,63 @@ h1, h2, h3, h4, h5, h6 {
   }
   .content-body {
     padding: 16px;
+  }
+
+  .modal-content {
+    padding: 20px !important;
+  }
+  
+  /* High-density padding for small phone tables */
+  .custom-table th, .custom-table td {
+    padding: 10px 8px !important;
+    font-size: 0.8rem !important;
+  }
+  
+  /* Button sizing adjustments */
+  .btn {
+    padding: 10px 16px !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* Universal Responsive Grid and Layout Overrides for Mobile Viewports */
+@media (max-width: 768px) {
+  /* Override any 2-column or 3-column inline grid to single column on mobile */
+  div[style*="grid-template-columns: 1fr 1fr"],
+  div[style*="grid-template-columns: 1fr 2fr"],
+  div[style*="grid-template-columns: 2fr 1fr"],
+  div[style*="grid-template-columns: 1fr 1fr 1fr"],
+  form[style*="grid-template-columns: 1fr 1fr"],
+  form[style*="grid-template-columns: 1fr 1fr 1fr"],
+  form[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"],
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Prevent horizontal overflow of cards with high min-width */
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr))"],
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr))"],
+  div[style*="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))"] {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) !important;
+  }
+
+  /* Make sure modal dialog buttons scale nicely */
+  div[style*="grid-template-columns: 1fr 1fr"][style*="gap"] {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  /* Stack space-between page flex headers on mobile */
+  div[style*="justify-content: space-between"][style*="margin-bottom: 32px"],
+  div[style*="justify-content: space-between"][style*="marginBottom: 32px"],
+  div[style*="justify-content: 'space-between'"][style*="marginBottom: '32px'"] {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+  div[style*="justify-content: space-between"][style*="margin-bottom: 32px"] > button,
+  div[style*="justify-content: space-between"][style*="margin-bottom: 32px"] > div,
+  div[style*="justify-content: space-between"][style*="margin-bottom: 32px"] > select {
+    width: 100% !important;
   }
 }

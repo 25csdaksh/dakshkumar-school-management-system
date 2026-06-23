@@ -78,7 +78,7 @@ export const Dashboard = ({ studentId }) => {
         </div>
 
         {/* Attendance progress ring */}
-        <div className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
+        <div className="glass-panel" style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div className="circle-progress-container">
             <svg width="100" height="100" className="circle-progress-svg">
               <circle cx="50" cy="50" r={radius} className="circle-progress-bg" strokeWidth="8" />
