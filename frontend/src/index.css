@@ -30,9 +30,12 @@
   --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: rgba(255, 255, 255, 0.85);
-  --sidebar-muted: rgba(255, 255, 255, 0.45);
+  --sidebar-text: #0f172a;
+  --sidebar-muted: #64748b;
   --sidebar-active-bg: #F97316;
+  --sidebar-hover-bg: rgba(15, 23, 42, 0.05);
+  --sidebar-active-text: #ffffff;
+  --bg-sidebar: #FAF8FC; /* Soft Pearl White */
 
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.06);
@@ -80,6 +83,8 @@
   --sidebar-text: rgba(228, 228, 231, 0.85);
   --sidebar-muted: rgba(228, 228, 231, 0.45);
   --sidebar-active-bg: #8b5cf6;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
+  --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
@@ -91,14 +96,14 @@
 
 [data-theme="parent-light"] {
   /* 60% Dominant Canvas: Off-white light gray */
-  --bg-app: #EDEDED;
+  --bg-app: #F8F5FA; /* Light Lavender White */
 
   /* 30% Structural: deep slate teal for sidebar, white for cards, border gray */
-  --bg-sidebar: #0E1F22;
-  --bg-card: #ffffff;
-  --border-color: #d1d5db;
-  --text-main: #0E1F22; /* Primary text matches dark slate */
-  --text-muted: #4b5563;
+  --bg-sidebar: #FAF8FC; /* Soft Pearl White */
+  --bg-card: #FFFFFF; /* Pure White */
+  --border-color: #edeaf1;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
   --text-inverse: #ffffff;
 
   /* 10% Accent Callouts: Gold highlights */
@@ -114,9 +119,11 @@
   --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: rgba(255, 255, 255, 0.95);
-  --sidebar-muted: rgba(255, 255, 255, 0.5);
+  --sidebar-text: #0f172a;
+  --sidebar-muted: #64748b;
   --sidebar-active-bg: #E2CD8A;
+  --sidebar-hover-bg: rgba(15, 23, 42, 0.05);
+  --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(14, 31, 34, 0.05);
   --shadow-md: 0 8px 20px rgba(14, 31, 34, 0.08);
@@ -129,14 +136,14 @@
 
 [data-theme="teacher-light"] {
   /* 60% Dominant Canvas: Pale Teal Green */
-  --bg-app: #EBF5F4;
+  --bg-app: #F8F5FA; /* Light Lavender White */
 
   /* 30% Structural: Dark Forest Teal for sidebar, white for cards, border gray */
-  --bg-sidebar: #0E2925;
-  --bg-card: #ffffff;
-  --border-color: #cbd5e1;
+  --bg-sidebar: #FAF8FC; /* Soft Pearl White */
+  --bg-card: #FFFFFF; /* Pure White */
+  --border-color: #edeaf1;
   --text-main: #0f172a;
-  --text-muted: #4b5563;
+  --text-muted: #64748b;
   --text-inverse: #ffffff;
 
   /* 10% Accent Callouts: Soft Coral Red */
@@ -152,9 +159,11 @@
   --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: rgba(255, 255, 255, 0.95);
-  --sidebar-muted: rgba(255, 255, 255, 0.5);
+  --sidebar-text: #0f172a;
+  --sidebar-muted: #64748b;
   --sidebar-active-bg: #F05454;
+  --sidebar-hover-bg: rgba(15, 23, 42, 0.05);
+  --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(14, 41, 37, 0.05);
   --shadow-md: 0 8px 20px rgba(14, 41, 37, 0.08);
@@ -167,14 +176,14 @@
 
 [data-theme="student-light"] {
   /* 60% Dominant Canvas: Mint White */
-  --bg-app: #F4FDF7;
+  --bg-app: #F8F5FA; /* Light Lavender White */
 
   /* 30% Structural: Emerald Green for sidebar, white for cards, border light-green, deep green text */
-  --bg-sidebar: #059669;
-  --bg-card: #ffffff;
-  --border-color: #d1fae5;
-  --text-main: #064E3B;
-  --text-muted: #047857;
+  --bg-sidebar: #FAF8FC; /* Soft Pearl White */
+  --bg-card: #FFFFFF; /* Pure White */
+  --border-color: #edeaf1;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
   --text-inverse: #ffffff;
 
   /* 10% Accent Callouts: Sunshine Yellow */
@@ -190,9 +199,11 @@
   --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: rgba(255, 255, 255, 0.95);
-  --sidebar-muted: rgba(255, 255, 255, 0.6);
+  --sidebar-text: #0f172a;
+  --sidebar-muted: #64748b;
   --sidebar-active-bg: #FBBF24;
+  --sidebar-hover-bg: rgba(15, 23, 42, 0.05);
+  --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(6, 78, 59, 0.05);
   --shadow-md: 0 8px 20px rgba(6, 78, 59, 0.08);
@@ -378,7 +389,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 1.25rem;
-  color: #ffffff;
+  color: var(--sidebar-text, var(--text-main));
   letter-spacing: -0.5px;
 }
 
@@ -406,8 +417,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .sidebar-item a:hover {
   transform: translateX(4px);
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--sidebar-active-text, #ffffff);
+  background-color: var(--sidebar-hover-bg, rgba(255, 255, 255, 0.08));
 }
 
 .sidebar-item.active a {
