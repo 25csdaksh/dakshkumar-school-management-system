@@ -355,28 +355,40 @@ export const importStudents = async (req, res) => {
       const row = rows[i];
       const rowIndex = i + 2; // Row number in Excel sheet (1-indexed + header row)
 
-      // Normalize fields
-      const grNoRaw = row['GR No'] || row['GR Number'] || row['Roll Number'] || row['grNo'] || row['Gr No'] || row['id'] || row['ID'] || row['GrNo'] || row['Gr number'] || row['Roll number'];
+      // Normalize fields according to the screenshot columns:
+      // GR NO, Student ID, name, class, section, mobile no., emai ID, address
+      const studentIdRaw = row['Student ID'] || row['StudentID'] || row['studentId'] || row['student_id'];
+      const grNoRaw = studentIdRaw || row['GR NO'] || row['GR No'] || row['Gr No'] || row['grNo'] || row['GR Number'] || row['id'] || row['ID'];
       const grNo = grNoRaw ? String(grNoRaw).trim() : '';
 
-      const nameRaw = row['Name'] || row['name'] || row['Full Name'] || row['Student Name'] || row['fullName'] || row['studentName'];
+      const nameRaw = row['name'] || row['Name'] || row['Full Name'] || row['Student Name'] || row['fullName'] || row['studentName'];
       const name = nameRaw ? String(nameRaw).trim() : '';
 
-      const classNameRaw = row['Class'] || row['class'] || row['Grade'] || row['Grade Class'] || row['grade'] || row['className'];
+      const classNameRaw = row['class'] || row['Class'] || row['Grade'] || row['Grade Class'] || row['grade'] || row['className'];
       const className = classNameRaw ? String(classNameRaw).trim() : '';
 
-      const sectionRaw = row['Section'] || row['section'] || row['Division'] || row['division'] || 'A';
-      const section = String(sectionRaw).trim().toUpperCase();
+      const sectionRaw = row['section'] || row['Section'] || row['Division'] || row['division'] || 'A';
+      let section = 'A';
+      if (sectionRaw) {
+        const trimmedSec = String(sectionRaw).trim().toUpperCase();
+        if (trimmedSec === '1') section = 'A';
+        else if (trimmedSec === '2') section = 'B';
+        else if (trimmedSec === '3') section = 'C';
+        else section = trimmedSec;
+      }
 
-      const parentEmailRaw = row['Parent Email'] || row['parentEmail'] || row['Parent’s Email'] || row['Parent\'s Email'] || row['parentemail'] || row['Parent email'];
+      const parentEmailRaw = row['emai ID'] || row['emai id'] || row['email ID'] || row['email id'] || row['Email'] || row['email'] || row['Parent Email'] || row['parentEmail'] || row['Parent\'s Email'];
       const parentEmail = parentEmailRaw ? String(parentEmailRaw).trim().toLowerCase() : '';
 
-      const phoneRaw = row['Phone'] || row['phone'] || row['Contact'] || row['Mobile'] || row['phoneNo'] || row['phone_number'];
+      const phoneRaw = row['mobile no.'] || row['mobile no'] || row['mobile'] || row['Phone'] || row['phone'] || row['Contact'] || row['Mobile'] || row['phoneNo'] || row['phone_number'];
       const phone = phoneRaw ? String(phoneRaw).trim() : '';
+
+      const addressRaw = row['address'] || row['Address'] || row['Residence'] || row['residence'];
+      const address = addressRaw ? String(addressRaw).trim() : '';
 
       // Check required fields
       if (!grNo) {
-        validationErrors.push(`Row ${rowIndex}: GR No (Student ID) is missing.`);
+        validationErrors.push(`Row ${rowIndex}: Student ID (or GR No) is missing.`);
       }
       if (!name) {
         validationErrors.push(`Row ${rowIndex}: Student Name is missing.`);
@@ -391,13 +403,17 @@ export const importStudents = async (req, res) => {
 
       // Check duplicates in the uploaded sheet
       if (seenGrNos.has(grNo)) {
-        validationErrors.push(`Row ${rowIndex}: Duplicate GR No "${grNo}" found in the uploaded file.`);
+        validationErrors.push(`Row ${rowIndex}: Duplicate Student ID / GR No "${grNo}" found in the uploaded file.`);
       } else {
         seenGrNos.add(grNo);
       }
 
-      // Resolve class
-      const classDoc = await Class.findOne({ name: new RegExp('^' + className.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
+      // Resolve class (handles resolving numeric class like "1" to "Grade 1")
+      let searchPattern = className.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+      if (!isNaN(className)) {
+        searchPattern = `(Grade|Class\\s+)?${className}`;
+      }
+      const classDoc = await Class.findOne({ name: new RegExp('^' + searchPattern + '$', 'i') });
       if (!classDoc) {
         validationErrors.push(`Row ${rowIndex}: Class "${className}" was not found in the database.`);
         continue;
@@ -410,7 +426,8 @@ export const importStudents = async (req, res) => {
         className: classDoc.name,
         section,
         parentEmail,
-        phone
+        phone,
+        address
       });
     }
 
@@ -457,6 +474,7 @@ export const importStudents = async (req, res) => {
         password: tempPassword,
         role: studentRole._id,
         phone: data.phone || '',
+        address: data.address || '',
         isFirstLogin: true
       });
       const savedUser = await user.save();
@@ -468,7 +486,9 @@ export const importStudents = async (req, res) => {
         rollNumber: data.grNo,
         classId: data.classId,
         section: data.section,
-        parentEmail: data.parentEmail || `parent_${data.grNo}@school.com`
+        parentEmail: data.parentEmail || `parent_${data.grNo}@school.com`,
+        parentPhone: data.phone || '',
+        address: data.address || ''
       });
       await student.save();
 

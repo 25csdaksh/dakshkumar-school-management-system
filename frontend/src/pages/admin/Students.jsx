@@ -505,12 +505,14 @@ export const Students = () => {
                 Your spreadsheet must contain headers in the first row. The following columns are processed:
               </p>
               <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <li><strong>GR No</strong> / <strong>Roll Number</strong> <span style={{ color: 'var(--danger)' }}>*</span></li>
-                <li><strong>Name</strong> <span style={{ color: 'var(--danger)' }}>*</span></li>
-                <li><strong>Class</strong> <span style={{ color: 'var(--danger)' }}>*</span> <span style={{ color: 'var(--text-muted)' }}>(Must match class name exactly)</span></li>
-                <li><strong>Section</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, defaults to A)</span></li>
-                <li><strong>Parent Email</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, auto-generated if blank)</span></li>
-                <li><strong>Phone</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional)</span></li>
+                <li><strong>Student ID</strong> <span style={{ color: 'var(--danger)' }}>*</span> <span style={{ color: 'var(--text-muted)' }}>(Unique login ID, e.g. 2026001)</span></li>
+                <li><strong>name</strong> <span style={{ color: 'var(--danger)' }}>*</span> <span style={{ color: 'var(--text-muted)' }}>(Student's full name)</span></li>
+                <li><strong>class</strong> <span style={{ color: 'var(--danger)' }}>*</span> <span style={{ color: 'var(--text-muted)' }}>(e.g. 1, Grade 1)</span></li>
+                <li><strong>section</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. 1 or A, will resolve 1 to A)</span></li>
+                <li><strong>mobile no.</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional contact)</span></li>
+                <li><strong>emai ID</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional parent email)</span></li>
+                <li><strong>address</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional residence)</span></li>
+                <li><strong>GR NO</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional fallback ID)</span></li>
               </ul>
             </div>
 
