@@ -7,12 +7,12 @@
 
   /* Premium Light Mode Palette (60:30:10 Theme Ratio) */
   /* 60% Dominant Color (Main Application Canvas) */
-  --bg-app: #F4F6F9;
+  --bg-app: #F8F5FA; /* Light Lavender White */
   
   /* 30% Structural Elements (Sidebar, Cards, Borders, Base Text hierarchy) */
   --bg-sidebar: #1E293B; /* Navy Blue for sidebar */
-  --bg-card: #ffffff;
-  --border-color: #e2e8f0;
+  --bg-card: #FFFFFF; /* Pure White */
+  --border-color: #edeaf1; /* Soft Lavender Border */
   --text-main: #0f172a;
   --text-muted: #64748b;
   --text-inverse: #ffffff;
@@ -38,8 +38,8 @@
   --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.06);
   --shadow-lg: 0 16px 36px rgba(15, 23, 42, 0.08);
 
-  --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(226, 232, 240, 0.8);
+  --glass-bg: rgba(250, 248, 252, 0.85);
+  --glass-border: rgba(237, 234, 241, 0.8);
   --glass-blur: blur(12px);
 
   --radius-sm: 8px;
@@ -1006,7 +1006,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--bg-app), #ebf0f8);
+  background: linear-gradient(135deg, #FAF8FC, #F8F5FA);
   padding: 20px;
   position: relative;
   overflow: hidden;
