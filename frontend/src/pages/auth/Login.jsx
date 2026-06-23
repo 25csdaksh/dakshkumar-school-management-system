@@ -193,14 +193,14 @@ export const Login = () => {
                 color: '#ffffff',
                 fontWeight: '700',
                 fontSize: '1rem'
-              }}>E</div>
+              }}>S</div>
               <span style={{
                 fontFamily: 'var(--font-heading)',
                 fontSize: '1.25rem',
                 fontWeight: '700',
                 color: 'var(--text-main)',
                 letterSpacing: '0.5px'
-              }}>EduSphere ERP</span>
+              }}>Shreejee Education</span>
             </div>
 
             {/* Academic Quote */}
@@ -640,7 +640,7 @@ export const Login = () => {
           <a href="#help" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Help</a>
         </div>
         <div>
-          &copy; {new Date().getFullYear()} EduSphere ERP. All Rights Reserved.
+          &copy; {new Date().getFullYear()} Shreejee Education. All Rights Reserved.
         </div>
       </footer>
     </div>

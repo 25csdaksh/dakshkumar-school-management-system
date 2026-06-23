@@ -368,7 +368,7 @@ export const Students = () => {
               <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.2)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1rem', marginBottom: '8px' }}>
                 S
               </div>
-              <h4 style={{ color: 'white', margin: 0, fontSize: '1.1rem', letterSpacing: '1px' }}>EduSphere Academy</h4>
+              <h4 style={{ color: 'white', margin: 0, fontSize: '1.1rem', letterSpacing: '1px' }}>Shreejee Education</h4>
               <span style={{ fontSize: '0.75rem', opacity: '0.8', textTransform: 'uppercase', marginTop: '2px' }}>Student Identity Card</span>
             </div>
 

@@ -120,8 +120,8 @@ export const BaseLayout = ({ children, menuItems }) => {
               color: 'white',
               fontWeight: 'bold',
               fontSize: '1.2rem'
-            }}>E</div>
-            <span className="logo-text">EduSphere ERP</span>
+            }}>S</div>
+            <span className="logo-text">Shreejee Education</span>
           </div>
           <button 
             className="mobile-sidebar-close" 
