@@ -354,10 +354,10 @@ export const Login = () => {
                       <Mail size={16} />
                     </span>
                     <input 
-                      type="email"
+                      type="text"
                       name="email"
                       autoComplete="username"
-                      placeholder={t('email_address')}
+                      placeholder={`${t('email_address')} / ${t('roll_number')}`}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
