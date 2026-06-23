@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { User, Phone, MapPin, Mail, Award, Key, Save, Edit2, ShieldAlert } from 'lucide-react';
+import { getProfilePictureUrl } from '../../services/api.js';
 
 export const Profile = () => {
   const { user, updateProfile } = useAuth();
@@ -100,7 +101,7 @@ export const Profile = () => {
         <div className="glass-panel" style={{ padding: '32px', display: 'flex', alignItems: 'center', gap: '24px', flexWrap: 'wrap' }}>
           <div style={{ position: 'relative' }}>
             <img 
-              src={previewUrl || 'http://localhost:5001/uploads/avatar.png'} 
+              src={getProfilePictureUrl(previewUrl)} 
               alt="Profile" 
               style={{ width: '120px', height: '120px', borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--border-color)', boxShadow: 'var(--shadow-sm)' }}
             />

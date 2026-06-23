@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
 const getHeaders = () => {
   const token = localStorage.getItem('token');
@@ -49,4 +49,13 @@ export const apiCall = async (endpoint, options = {}) => {
     console.error('API Error:', error.message);
     throw error;
   }
+};
+
+export const getProfilePictureUrl = (path) => {
+  const backendUrl = API_URL.replace('/api', '');
+  if (!path) return `${backendUrl}/uploads/avatar.png`;
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('blob:')) {
+    return path;
+  }
+  return `${backendUrl}${path}`;
 };

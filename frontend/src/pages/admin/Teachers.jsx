@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { studentService } from '../../services/studentService.js';
 import { Plus, Trash2, Edit, UserPlus, X } from 'lucide-react';
+import { getProfilePictureUrl } from '../../services/api.js';
 
 export const Teachers = () => {
   const [teachers, setTeachers] = useState([]);
@@ -165,10 +166,10 @@ export const Teachers = () => {
                   <tr key={teacher._id}>
                     <td>
                       <img 
-                        src={teacher.profilePicture} 
+                        src={getProfilePictureUrl(teacher.profilePicture)} 
                         alt={teacher.name} 
                         style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border-color)' }}
-                        onError={(e) => { e.target.src = 'http://localhost:5001/uploads/avatar.png'; }}
+                        onError={(e) => { e.target.src = getProfilePictureUrl(); }}
                       />
                     </td>
                     <td><strong style={{ color: 'var(--text-main)' }}>{teacher.name}</strong></td>

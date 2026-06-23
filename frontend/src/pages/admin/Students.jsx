@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { studentService } from '../../services/studentService.js';
 import { Plus, Trash2, Edit, Contact, UserPlus, X } from 'lucide-react';
+import { getProfilePictureUrl } from '../../services/api.js';
 
 export const Students = () => {
   const [students, setStudents] = useState([]);
@@ -180,10 +181,10 @@ export const Students = () => {
                   <tr key={student._id}>
                     <td>
                       <img 
-                        src={student.profilePicture} 
+                        src={getProfilePictureUrl(student.profilePicture)} 
                         alt={student.name} 
                         style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--border-color)' }}
-                        onError={(e) => { e.target.src = 'http://localhost:5001/uploads/avatar.png'; }}
+                        onError={(e) => { e.target.src = getProfilePictureUrl(); }}
                       />
                     </td>
                     <td><strong style={{ color: 'var(--text-main)' }}>{student.name}</strong></td>
@@ -374,10 +375,10 @@ export const Students = () => {
             {/* Body */}
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 20px', background: 'var(--bg-card)' }}>
               <img 
-                src={selectedStudent.profilePicture} 
+                src={getProfilePictureUrl(selectedStudent.profilePicture)} 
                 alt={selectedStudent.name} 
                 style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', border: '4px solid var(--border-color)', boxShadow: 'var(--shadow-md)', marginBottom: '16px' }}
-                onError={(e) => { e.target.src = 'http://localhost:5001/uploads/avatar.png'; }}
+                onError={(e) => { e.target.src = getProfilePictureUrl(); }}
               />
 
               <h3 style={{ fontSize: '1.25rem', fontWeight: '700', marginBottom: '4px' }}>{selectedStudent.name}</h3>

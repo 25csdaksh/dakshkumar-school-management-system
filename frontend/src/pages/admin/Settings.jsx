@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext.jsx';
-import { apiCall } from '../../services/api.js';
+import { apiCall, getProfilePictureUrl } from '../../services/api.js';
 import { Save, Camera, Moon, Sun, Printer, Mail, Phone, X, Shield, History } from 'lucide-react';
 
 export const Settings = () => {
@@ -200,7 +200,7 @@ export const Settings = () => {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
               <div style={{ position: 'relative', width: '100px', height: '100px' }}>
                 <img 
-                  src={preview} 
+                  src={getProfilePictureUrl(preview)} 
                   alt="Avatar" 
                   style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover', border: '3px solid var(--primary)' }}
                 />
@@ -331,7 +331,7 @@ export const Settings = () => {
                   {/* Photo Profile */}
                   <div style={{ textAlign: 'center' }}>
                     <img 
-                      src={user?.profilePicture || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=150&h=150&q=80'} 
+                      src={getProfilePictureUrl(user?.profilePicture)} 
                       alt={user?.name} 
                       style={{
                         width: '100px',

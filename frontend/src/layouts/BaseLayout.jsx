@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import { authService } from '../services/authService.js';
+import { getProfilePictureUrl } from '../services/api.js';
 import {
   LayoutDashboard,
   Users,
@@ -302,7 +303,7 @@ export const BaseLayout = ({ children, menuItems }) => {
             {/* Profile Avatar Summary */}
             <div className="user-profile-summary">
               <img 
-                src={user?.profilePicture || 'http://localhost:5001/uploads/avatar.png'} 
+                src={getProfilePictureUrl(user?.profilePicture)} 
                 alt="Profile" 
                 className="user-avatar"
               />
