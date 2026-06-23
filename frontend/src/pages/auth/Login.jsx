@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { studentService } from '../../services/studentService.js';
+import LanguageSelector from '../../components/LanguageSelector.jsx';
 import { 
   LogIn, 
   HelpCircle, 
@@ -18,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const Login = () => {
+  const { t } = useTranslation();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -41,6 +44,9 @@ export const Login = () => {
 
   const { login, register, theme, toggleTheme } = useAuth();
   const navigate = useNavigate();
+
+  const signupText = t('new_user_signup');
+  const signupParts = signupText.includes('?') ? signupText.split('?') : [signupText, ''];
 
   useEffect(() => {
     if (isRegister) {
@@ -118,31 +124,38 @@ export const Login = () => {
       overflowX: 'hidden',
       padding: 0
     }}>
-      {/* Floating Theme Switcher */}
-      <button 
-        onClick={toggleTheme} 
-        style={{
-          position: 'absolute',
-          top: '20px',
-          right: '20px',
-          width: '40px',
-          height: '40px',
-          borderRadius: '50%',
-          border: '1px solid var(--border-color)',
-          backgroundColor: 'var(--bg-card)',
-          color: 'var(--text-main)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          boxShadow: 'var(--shadow-sm)',
-          zIndex: 100,
-          transition: 'all 0.2s ease'
-        }}
-        title="Toggle Theme"
-      >
-        {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-      </button>
+      {/* Floating Controls */}
+      <div style={{
+        position: 'absolute',
+        top: '20px',
+        right: '20px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '10px',
+        zIndex: 100
+      }}>
+        <LanguageSelector />
+        <button 
+          onClick={toggleTheme} 
+          style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            border: '1px solid var(--border-color)',
+            backgroundColor: 'var(--bg-card)',
+            color: 'var(--text-main)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: 'var(--shadow-sm)',
+            transition: 'all 0.2s ease'
+          }}
+          title="Toggle Theme"
+        >
+          {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+        </button>
+      </div>
 
       {/* Main Container Workspace */}
       <div style={{
@@ -193,7 +206,7 @@ export const Login = () => {
                 fontWeight: '700',
                 color: 'var(--text-main)',
                 letterSpacing: '0.5px'
-              }}>Shreejee Education</span>
+              }}>{t('shreejee_education')}</span>
             </div>
 
             {/* Academic Quote */}
@@ -207,7 +220,7 @@ export const Login = () => {
                 marginTop: '-8px',
                 fontFamily: 'var(--font-heading)'
               }}>
-                The beautiful thing about learning is that no one can take it away from you
+                {t('academic_quote')}
               </h2>
             </div>
 
@@ -319,10 +332,10 @@ export const Login = () => {
               {/* Form Title */}
               <div style={{ textAlign: 'center', marginTop: '36px', padding: '0 24px', marginBottom: '24px' }}>
                 <h3 style={{ fontSize: '1.15rem', fontWeight: '700', color: 'var(--text-main)' }}>
-                  {isRegister ? 'Create Credentials' : 'Welcome Portal'}
+                  {isRegister ? t('create_credentials') : t('welcome_portal')}
                 </h3>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                  {isRegister ? 'Register academic record' : 'Sign in to access tools'}
+                  {isRegister ? t('register_subtitle') : t('sign_in_subtitle')}
                 </span>
               </div>
 
@@ -344,7 +357,7 @@ export const Login = () => {
                       type="email"
                       name="email"
                       autoComplete="username"
-                      placeholder="Email Address"
+                      placeholder={t('email_address')}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -373,7 +386,7 @@ export const Login = () => {
                       type="password"
                       name="password"
                       autoComplete="current-password"
-                      placeholder="Password"
+                      placeholder={t('password')}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
@@ -391,17 +404,17 @@ export const Login = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.75rem', marginBottom: '24px' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-muted)', cursor: 'pointer' }}>
                       <input type="checkbox" style={{ accentColor: 'var(--primary)' }} />
-                      <span>Remember me</span>
+                      <span>{t('remember_me')}</span>
                     </label>
                     <a href="#forgot" onClick={(e) => { e.preventDefault(); alert('Please contact administrative support to reset your passwords.'); }} style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: '500' }}>
-                      Forgot Password?
+                      {t('forgot_password')}
                     </a>
                   </div>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '12px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                       <LogIn size={16} />
-                      <span>{loading ? 'Entering...' : 'Sign In'}</span>
+                      <span>{loading ? t('entering') : t('sign_in')}</span>
                     </button>
                     
                     <button 
@@ -409,7 +422,7 @@ export const Login = () => {
                       onClick={() => setIsRegister(true)} 
                       style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '0.8rem', textAlign: 'center', marginTop: '4px' }}
                     >
-                      New User? <strong style={{ color: 'var(--primary)' }}>Sign Up</strong>
+                      {signupParts[0]}? <strong style={{ color: 'var(--primary)' }}>{signupParts[1]?.trim() || 'Sign Up'}</strong>
                     </button>
                   </div>
                 </form>
@@ -417,21 +430,21 @@ export const Login = () => {
                 /* REGISTRATION SCREEN */
                 <form onSubmit={handleRegisterSubmit} style={{ padding: '0 24px', maxHeight: '380px', overflowY: 'auto', paddingRight: '6px' }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Select Role</label>
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>{t('select_role')}</label>
                     <select 
                       className="form-control" 
                       value={regRole} 
                       onChange={(e) => setRegRole(e.target.value)}
                       style={{ fontSize: '0.85rem', padding: '8px' }}
                     >
-                      <option value="student">Student</option>
-                      <option value="parent">Parent</option>
-                      <option value="teacher">Teacher</option>
+                      <option value="student">{t('student')}</option>
+                      <option value="parent">{t('parent')}</option>
+                      <option value="teacher">{t('teacher')}</option>
                     </select>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Full Name</label>
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>{t('full_name')}</label>
                     <input
                       type="text"
                       className="form-control"
@@ -443,7 +456,7 @@ export const Login = () => {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Email Address</label>
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>{t('email_address')}</label>
                     <input
                       type="email"
                       className="form-control"
@@ -455,7 +468,7 @@ export const Login = () => {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontSize: '0.75rem' }}>Password</label>
+                    <label className="form-label" style={{ fontSize: '0.75rem' }}>{t('password')}</label>
                     <input
                       type="password"
                       className="form-control"
@@ -481,9 +494,9 @@ export const Login = () => {
                   {regRole === 'student' && (
                     <div style={{ background: 'var(--bg-app)', padding: '12px', borderRadius: '8px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Roll Number</label>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>{t('roll_number')}</label>
                         <input 
-                          type="text" 
+                           type="text" 
                           className="form-control" 
                           value={regRollNumber}
                           onChange={e => setRegRollNumber(e.target.value)}
@@ -492,7 +505,7 @@ export const Login = () => {
                         />
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Class Grade</label>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>{t('class_grade')}</label>
                         <select 
                           className="form-control" 
                           value={regClassId}
@@ -504,7 +517,7 @@ export const Login = () => {
                         </select>
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Parent's Email</label>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>{t('parent_email')}</label>
                         <input 
                           type="email" 
                           className="form-control" 
@@ -521,7 +534,7 @@ export const Login = () => {
                   {regRole === 'teacher' && (
                     <div style={{ background: 'var(--bg-app)', padding: '12px', borderRadius: '8px', marginBottom: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Qualifications</label>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>{t('qualifications')}</label>
                         <input 
                           type="text" 
                           className="form-control" 
@@ -532,7 +545,7 @@ export const Login = () => {
                         />
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '0.7rem' }}>Specialty Subject</label>
+                        <label className="form-label" style={{ fontSize: '0.7rem' }}>{t('specialty_subject')}</label>
                         <input 
                           type="text" 
                           className="form-control" 
@@ -548,7 +561,7 @@ export const Login = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
                     <button type="submit" className="btn btn-primary w-full" disabled={loading} style={{ padding: '10px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
                       <UserPlus size={16} />
-                      <span>{loading ? 'Creating...' : 'Register'}</span>
+                      <span>{loading ? t('creating') : t('register')}</span>
                     </button>
                     
                     <button 
@@ -558,7 +571,7 @@ export const Login = () => {
                       style={{ padding: '8px', borderRadius: '8px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}
                     >
                       <ArrowLeft size={14} />
-                      <span>Back to Sign In</span>
+                      <span>{t('back_to_signin')}</span>
                     </button>
                   </div>
                 </form>
@@ -587,10 +600,10 @@ export const Login = () => {
           flexWrap: 'wrap',
           marginBottom: '12px'
         }}>
-          <a href="#terms" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Terms</a>
-          <a href="#privacy" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Policy & Procedures</a>
-          <a href="#contact" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Contact Us</a>
-          <a href="#help" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>Help</a>
+          <a href="#terms" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>{t('terms')}</a>
+          <a href="#privacy" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>{t('policy_procedures')}</a>
+          <a href="#contact" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>{t('contact_us')}</a>
+          <a href="#help" onClick={(e) => e.preventDefault()} style={{ color: '#9ca3af', textDecoration: 'none' }}>{t('help')}</a>
         </div>
         <div>
           &copy; {new Date().getFullYear()} Shreejee Education. All Rights Reserved.

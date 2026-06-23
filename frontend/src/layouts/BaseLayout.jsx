@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext.jsx';
 import { authService } from '../services/authService.js';
 import { getProfilePictureUrl } from '../services/api.js';
+import LanguageSelector from '../components/LanguageSelector.jsx';
 import {
   LayoutDashboard,
   Users,
@@ -27,6 +29,7 @@ import {
 } from 'lucide-react';
 
 export const BaseLayout = ({ children, menuItems }) => {
+  const { t } = useTranslation();
   const { user, logout, theme, toggleTheme } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -121,7 +124,7 @@ export const BaseLayout = ({ children, menuItems }) => {
               fontWeight: 'bold',
               fontSize: '1.2rem'
             }}>S</div>
-            <span className="logo-text">Shreejee Education</span>
+            <span className="logo-text">{t('shreejee_education')}</span>
           </div>
           <button 
             className="mobile-sidebar-close" 
@@ -186,7 +189,7 @@ export const BaseLayout = ({ children, menuItems }) => {
                       <li key={index} className={`sidebar-item ${isActive ? 'active' : ''}`}>
                         <Link to={item.path} onClick={() => setSidebarOpen(false)}>
                           {getIcon(item.icon)}
-                          <span>{item.label}</span>
+                          <span>{t(item.label)}</span>
                         </Link>
                       </li>
                     );
@@ -204,7 +207,7 @@ export const BaseLayout = ({ children, menuItems }) => {
             style={{ padding: '10px 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
           >
             <LogOut size={16} />
-            <span>Logout</span>
+            <span>{t('logout')}</span>
           </button>
         </div>
       </aside>
@@ -222,11 +225,14 @@ export const BaseLayout = ({ children, menuItems }) => {
               <Menu size={20} />
             </button>
             <div className="page-title">
-              <h1>School ERP Portal</h1>
+              <h1>{t('school_erp_portal')}</h1>
             </div>
           </div>
 
           <div className="nav-actions">
+            {/* Language Selector */}
+            <LanguageSelector />
+
             {/* Notifications Bell */}
             <div style={{ position: 'relative' }}>
               <button className="theme-toggle" onClick={handleToggleNotifications} title="Notifications">
@@ -262,12 +268,12 @@ export const BaseLayout = ({ children, menuItems }) => {
                   boxShadow: 'var(--shadow-lg)'
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
-                    <h4 style={{ margin: 0, fontSize: '0.95rem' }}>Announcements</h4>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{notifications.length} total</span>
+                    <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{t('announcements')}</h4>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{notifications.length} {t('total')}</span>
                   </div>
                   {notifications.length === 0 ? (
                     <div style={{ padding: '16px 0', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                      No announcements at this time.
+                      {t('no_announcements')}
                     </div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
