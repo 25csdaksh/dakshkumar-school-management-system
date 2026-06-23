@@ -16,11 +16,18 @@ export const Students = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
+  const [category, setCategory] = useState('open');
   const [rollNumber, setRollNumber] = useState('');
   const [classId, setClassId] = useState('');
   const [section, setSection] = useState('A');
   const [parentEmail, setParentEmail] = useState('');
+
+  // Table Filtering States
+  const [filterClassId, setFilterClassId] = useState('All');
+  const [filterSection, setFilterSection] = useState('All');
   
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -57,7 +64,10 @@ export const Students = () => {
     setName('');
     setEmail('');
     setPassword('');
+    setShowPassword(false);
     setPhone('');
+    setAddress('');
+    setCategory('open');
     setRollNumber('');
     if (classes.length > 0) setClassId(classes[0]._id);
     setSection('A');
@@ -71,8 +81,11 @@ export const Students = () => {
     setEditingStudentId(student._id);
     setName(student.name);
     setEmail(student.email);
-    setPassword('********'); // Placeholder
+    setPassword(''); // Empty to keep current password unchanged
+    setShowPassword(false);
     setPhone(student.phone || '');
+    setAddress(student.address || student.studentInfo?.address || '');
+    setCategory(student.studentInfo?.category || 'open');
     setRollNumber(student.studentInfo?.rollNumber || '');
     setClassId(student.studentInfo?.classId?._id || student.studentInfo?.classId || '');
     setSection(student.studentInfo?.section || 'A');
@@ -96,13 +109,20 @@ export const Students = () => {
       name,
       email,
       phone,
+      address,
       studentInfo: {
         rollNumber,
         classId,
         section,
-        parentEmail
+        parentEmail,
+        category,
+        address
       }
     };
+
+    if (password) {
+      payload.password = password;
+    }
 
     try {
       if (editingStudentId) {
@@ -111,7 +131,6 @@ export const Students = () => {
         setSuccess('Student details updated successfully.');
       } else {
         // Add flow
-        payload.password = password;
         payload.role = 'student';
         await studentService.createUser(payload);
         setSuccess('Student registered successfully.');
@@ -171,6 +190,13 @@ export const Students = () => {
     }
   };
 
+  const filteredStudents = students.filter((student) => {
+    const studentClassId = student.studentInfo?.classId?._id || student.studentInfo?.classId;
+    const matchesClass = filterClassId === 'All' || studentClassId === filterClassId;
+    const matchesSection = filterSection === 'All' || student.studentInfo?.section === filterSection;
+    return matchesClass && matchesSection;
+  });
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -212,29 +238,64 @@ export const Students = () => {
           <h4>Loading student records...</h4>
         </div>
       ) : (
-        <div className="glass-panel table-responsive">
-          <table className="custom-table">
-            <thead>
-              <tr>
-                <th>Profile</th>
-                <th>Name</th>
-                <th>Roll Number</th>
-                <th>Grade Class</th>
-                <th>Email / Contact</th>
-                <th>Parent Email</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {students.length === 0 ? (
+        <div>
+          {/* Filters Panel */}
+          <div style={{ display: 'flex', gap: '16px', marginBottom: '20px', flexWrap: 'wrap', padding: '12px 16px', background: 'var(--bg-card)', borderRadius: '12px', border: '1px solid var(--border-color)', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: '600', color: 'var(--text-main)' }}>Filter By:</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Class:</label>
+              <select 
+                className="form-control" 
+                style={{ width: '160px', padding: '6px 12px', height: '36px' }} 
+                value={filterClassId} 
+                onChange={(e) => setFilterClassId(e.target.value)}
+              >
+                <option value="All">All Classes</option>
+                {classes.map(c => (
+                  <option key={c._id} value={c._id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <label style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Section:</label>
+              <select 
+                className="form-control" 
+                style={{ width: '130px', padding: '6px 12px', height: '36px' }} 
+                value={filterSection} 
+                onChange={(e) => setFilterSection(e.target.value)}
+              >
+                <option value="All">All Sections</option>
+                <option value="A">Section A</option>
+                <option value="B">Section B</option>
+                <option value="C">Section C</option>
+                <option value="D">Section D</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="glass-panel table-responsive">
+            <table className="custom-table">
+              <thead>
                 <tr>
-                  <td colSpan="7" className="text-center" style={{ color: 'var(--text-muted)' }}>
-                    No students currently registered.
-                  </td>
+                  <th>Profile</th>
+                  <th>Name</th>
+                  <th>Roll Number</th>
+                  <th>Grade Class</th>
+                  <th>Email / Contact</th>
+                  <th>Parent Email</th>
+                  <th>Actions</th>
                 </tr>
-              ) : (
-                students.map((student) => (
-                  <tr key={student._id}>
+              </thead>
+              <tbody>
+                {filteredStudents.length === 0 ? (
+                  <tr>
+                    <td colSpan="7" className="text-center" style={{ color: 'var(--text-muted)' }}>
+                      No students found matching current filters.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredStudents.map((student) => (
+                    <tr key={student._id}>
                     <td>
                       <img 
                         src={getProfilePictureUrl(student.profilePicture)} 
@@ -295,6 +356,7 @@ export const Students = () => {
             </tbody>
           </table>
         </div>
+        </div>
       )}
 
       {/* Registration/Edit Modal Overlay */}
@@ -334,14 +396,25 @@ export const Students = () => {
                 </div>
                 <div className="form-group">
                   <label className="form-label">Password</label>
-                  <input 
-                    type="password" 
-                    className="form-control" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    disabled={!!editingStudentId}
-                    required={!editingStudentId} 
-                  />
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <input 
+                      type={showPassword ? "text" : "password"} 
+                      className="form-control" 
+                      value={password} 
+                      placeholder={editingStudentId ? "Leave blank to keep unchanged" : "Password"}
+                      onChange={(e) => setPassword(e.target.value)} 
+                      required={!editingStudentId} 
+                      style={{ flexGrow: 1 }}
+                    />
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary" 
+                      style={{ padding: '0 12px', height: '42px', minWidth: '70px', fontSize: '0.8rem' }}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? "Hide" : "Show"}
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -384,14 +457,31 @@ export const Students = () => {
                 </div>
               </div>
 
-              <div className="form-group">
-                <label className="form-label">Phone</label>
-                <input 
-                  type="text" 
-                  className="form-control" 
-                  value={phone} 
-                  onChange={(e) => setPhone(e.target.value)} 
-                />
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div className="form-group">
+                  <label className="form-label">Phone</label>
+                  <input 
+                    type="text" 
+                    className="form-control" 
+                    value={phone} 
+                    onChange={(e) => setPhone(e.target.value)} 
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Category</label>
+                  <select 
+                    className="form-control" 
+                    value={category} 
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    <option value="open">Open</option>
+                    <option value="obc">OBC</option>
+                    <option value="sc">SC</option>
+                    <option value="st">ST</option>
+                    <option value="ews">EWS</option>
+                  </select>
+                </div>
               </div>
 
               <div className="form-group">
@@ -403,6 +493,18 @@ export const Students = () => {
                   onChange={(e) => setParentEmail(e.target.value)} 
                   placeholder="parent@schoolerp.com"
                   required 
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Residential Address</label>
+                <textarea 
+                  className="form-control" 
+                  rows="2"
+                  value={address} 
+                  onChange={(e) => setAddress(e.target.value)} 
+                  placeholder="Enter complete residential address"
+                  style={{ resize: 'none' }}
                 />
               </div>
 
@@ -454,6 +556,16 @@ export const Students = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Contact No:</span>
                   <strong>{selectedStudent.phone || 'N/A'}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Category:</span>
+                  <strong style={{ textTransform: 'uppercase' }}>{selectedStudent.studentInfo?.category || 'open'}</strong>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderTop: '1px dashed var(--border-color)', paddingTop: '8px', marginTop: '4px' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Address:</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-main)', wordBreak: 'break-word' }}>
+                    {selectedStudent.address || selectedStudent.studentInfo?.address || 'N/A'}
+                  </span>
                 </div>
               </div>
 
@@ -512,6 +624,7 @@ export const Students = () => {
                 <li><strong>mobile no.</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional contact)</span></li>
                 <li><strong>emai ID</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional parent email)</span></li>
                 <li><strong>address</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional residence)</span></li>
+                <li><strong>cetegary</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional social category, e.g. open, obc, sc, st)</span></li>
                 <li><strong>GR NO</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional fallback ID)</span></li>
               </ul>
             </div>

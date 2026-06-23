@@ -179,6 +179,7 @@ export const updateProfile = async (req, res) => {
               studentDoc.bloodGroup = info.bloodGroup !== undefined ? info.bloodGroup : studentDoc.bloodGroup;
               studentDoc.aadhaarNumber = info.aadhaarNumber !== undefined ? info.aadhaarNumber : studentDoc.aadhaarNumber;
               studentDoc.address = info.address !== undefined ? info.address : studentDoc.address;
+              studentDoc.category = info.category !== undefined ? info.category : studentDoc.category;
             } catch (err) {
               console.error('Failed to parse studentInfo', err);
             }

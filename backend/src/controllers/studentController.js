@@ -12,8 +12,8 @@ import xlsx from 'xlsx';
 
 // @desc    Admin: Register a new student
 export const createStudent = async (req, res) => {
-  const { name, email, password, phone, studentInfo } = req.body;
-  const { rollNumber, classId, parentEmail, section } = studentInfo || {};
+  const { name, email, password, phone, address, studentInfo } = req.body;
+  const { rollNumber, classId, parentEmail, section, category } = studentInfo || {};
 
   try {
     const userExists = await User.findOne({ email });
@@ -33,7 +33,8 @@ export const createStudent = async (req, res) => {
       email,
       password,
       role: roleDoc._id,
-      phone
+      phone,
+      address: address || ''
     });
     const savedUser = await user.save();
 
@@ -44,7 +45,10 @@ export const createStudent = async (req, res) => {
       rollNumber,
       classId,
       section: section || 'A',
-      parentEmail
+      parentEmail,
+      parentPhone: phone || '',
+      address: address || '',
+      category: category || 'open'
     });
     await student.save();
 
@@ -54,11 +58,14 @@ export const createStudent = async (req, res) => {
       email: savedUser.email,
       role: 'student',
       phone: savedUser.phone,
+      address: savedUser.address,
       studentInfo: {
         rollNumber,
         classId,
         section: student.section,
-        parentEmail
+        parentEmail,
+        category: student.category,
+        address: student.address
       }
     });
   } catch (error) {
@@ -81,12 +88,15 @@ export const getStudents = async (req, res) => {
         email: doc.user.email,
         role: 'student',
         phone: doc.user.phone,
+        address: doc.address || doc.user.address || '',
         profilePicture: doc.user.profilePicture,
         studentInfo: {
           rollNumber: doc.rollNumber,
           classId: doc.classId,
           section: doc.section || 'A',
-          parentEmail: doc.parentEmail
+          parentEmail: doc.parentEmail,
+          category: doc.category || 'open',
+          address: doc.address || doc.user.address || ''
         }
       };
     }).filter(s => s !== null);
@@ -292,8 +302,8 @@ export const getStudentHomework = async (req, res) => {
 // @route   PUT /api/student/:id
 export const updateStudent = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone, studentInfo } = req.body;
-  const { rollNumber, classId, parentEmail, parentName, parentPhone, bloodGroup, aadhaarNumber, section } = studentInfo || {};
+  const { name, email, phone, password, address, studentInfo } = req.body;
+  const { rollNumber, classId, parentEmail, parentName, parentPhone, bloodGroup, aadhaarNumber, section, category } = studentInfo || {};
 
   try {
     const user = await User.findById(id);
@@ -302,6 +312,8 @@ export const updateStudent = async (req, res) => {
     user.name = name || user.name;
     user.email = email || user.email;
     user.phone = phone || user.phone;
+    if (address !== undefined) user.address = address;
+    if (password) user.password = password;
     await user.save();
 
     const student = await Student.findOne({ user: id });
@@ -316,6 +328,8 @@ export const updateStudent = async (req, res) => {
     student.parentPhone = parentPhone || student.parentPhone;
     student.bloodGroup = bloodGroup || student.bloodGroup;
     student.aadhaarNumber = aadhaarNumber || student.aadhaarNumber;
+    if (address !== undefined) student.address = address;
+    if (category !== undefined) student.category = category;
     await student.save();
 
     res.json({ message: 'Student updated successfully', data: { user, student } });
@@ -399,6 +413,9 @@ export const importStudents = async (req, res) => {
       const addressRaw = getRowValue(row, ['address', 'Address', 'Residence', 'residence']);
       const address = addressRaw ? String(addressRaw).trim() : '';
 
+      const categoryRaw = getRowValue(row, ['category', 'cetegary', 'cetogary', 'caste', 'class category']);
+      const category = categoryRaw ? String(categoryRaw).trim() : 'open';
+
       // Check required fields
       if (!grNo) {
         validationErrors.push(`Row ${rowIndex}: Student ID (or GR No) is missing.`);
@@ -440,7 +457,8 @@ export const importStudents = async (req, res) => {
         section,
         parentEmail,
         phone,
-        address
+        address,
+        category
       });
     }
 
@@ -501,7 +519,8 @@ export const importStudents = async (req, res) => {
         section: data.section,
         parentEmail: data.parentEmail || `parent_${data.grNo}@school.com`,
         parentPhone: data.phone || '',
-        address: data.address || ''
+        address: data.address || '',
+        category: data.category || 'open'
       });
       await student.save();
 

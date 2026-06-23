@@ -20,6 +20,7 @@ export const Profile = () => {
   const [bloodGroup, setBloodGroup] = useState(user?.studentInfo?.bloodGroup || '');
   const [aadhaarNumber, setAadhaarNumber] = useState(user?.studentInfo?.aadhaarNumber || '');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(user?.profilePicture || '');
 
@@ -147,6 +148,7 @@ export const Profile = () => {
             <div style={{ display: 'flex', gap: '16px', marginTop: '12px', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               <span>Roll Number: <strong>{user?.studentInfo?.rollNumber || 'N/A'}</strong></span>
               <span>Section: <strong>{user?.studentInfo?.section || 'A'}</strong></span>
+              <span>Category: <strong style={{ textTransform: 'uppercase' }}>{user?.studentInfo?.category || 'OPEN'}</strong></span>
             </div>
           </div>
         </div>
@@ -321,13 +323,24 @@ export const Profile = () => {
             </h4>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">New Password</label>
-              <input 
-                type="password" 
-                className="form-control" 
-                value={password} 
-                onChange={(e) => setPassword(e.target.value)} 
-                placeholder="Leave blank to keep current password"
-              />
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input 
+                  type={showPassword ? "text" : "password"} 
+                  className="form-control" 
+                  value={password} 
+                  onChange={(e) => setPassword(e.target.value)} 
+                  placeholder="Leave blank to keep current password"
+                  style={{ flexGrow: 1 }}
+                />
+                <button 
+                  type="button" 
+                  className="btn btn-secondary" 
+                  style={{ padding: '0 12px', height: '42px', minWidth: '70px', fontSize: '0.8rem' }}
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "Hide" : "Show"}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -347,6 +360,8 @@ export const Profile = () => {
               setAadhaarNumber(user?.studentInfo?.aadhaarNumber || '');
               setSelectedFile(null);
               setPreviewUrl(user?.profilePicture || '');
+              setPassword('');
+              setShowPassword(false);
             }} disabled={loading}>
               Cancel
             </button>
