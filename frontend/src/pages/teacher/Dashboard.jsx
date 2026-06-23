@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { studentService } from '../../services/studentService.js';
+import { authService } from '../../services/authService.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { BookOpen, Megaphone, Calendar } from 'lucide-react';
 
@@ -15,8 +16,8 @@ export const Dashboard = () => {
       try {
         const classes = await studentService.getTeacherClasses();
         setAssignedClasses(classes);
-        const noticeData = await studentService.getNotices();
-        setNotices(noticeData.filter(n => n.targetAudience === 'All' || n.targetAudience === 'Teachers'));
+        const noticeData = await authService.getNotifications();
+        setNotices(noticeData);
       } catch (err) {
         setError('Failed to fetch dashboard data.');
       } finally {
