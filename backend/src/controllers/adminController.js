@@ -9,13 +9,13 @@ import Subject from '../models/Subject.js';
 // @desc    Admin: Get dashboard statistics
 export const getDashboardStats = async (req, res) => {
   try {
-    const studentCount = await Student.countDocuments();
-    const teacherCount = await Teacher.countDocuments();
-    const classCount = await Class.countDocuments();
-    const noticeCount = await Notice.countDocuments();
-
-    // Fee calculations
-    const fees = await Fee.find({});
+    const [studentCount, teacherCount, classCount, noticeCount, fees] = await Promise.all([
+      Student.countDocuments(),
+      Teacher.countDocuments(),
+      Class.countDocuments(),
+      Notice.countDocuments(),
+      Fee.find({})
+    ]);
     let totalInvoiced = 0;
     let totalCollected = 0;
     let totalPending = 0;

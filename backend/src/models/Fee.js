@@ -39,5 +39,7 @@ const feeSchema = new mongoose.Schema({
   timestamps: true
 });
 
+feeSchema.index({ student: 1 });
+
 const Fee = mongoose.model('Fee', feeSchema);
 export default Fee;

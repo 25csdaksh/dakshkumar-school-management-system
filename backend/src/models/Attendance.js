@@ -34,6 +34,7 @@ const attendanceSchema = new mongoose.Schema({
 });
 
 attendanceSchema.index({ student: 1, date: 1 }, { unique: true });
+attendanceSchema.index({ classId: 1, section: 1 });
 
 const Attendance = mongoose.model('Attendance', attendanceSchema);
 export default Attendance;

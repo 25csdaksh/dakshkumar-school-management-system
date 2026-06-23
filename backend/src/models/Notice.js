@@ -28,5 +28,8 @@ const noticeSchema = new mongoose.Schema({
   timestamps: true
 });
 
+noticeSchema.index({ targetUser: 1 });
+noticeSchema.index({ createdAt: -1 });
+
 const Notice = mongoose.model('Notice', noticeSchema);
 export default Notice;

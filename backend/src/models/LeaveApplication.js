@@ -38,5 +38,7 @@ const leaveApplicationSchema = new mongoose.Schema({
   timestamps: true
 });
 
+leaveApplicationSchema.index({ applicant: 1 });
+
 const LeaveApplication = mongoose.model('LeaveApplication', leaveApplicationSchema);
 export default LeaveApplication;

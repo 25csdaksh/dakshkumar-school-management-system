@@ -41,5 +41,7 @@ const homeworkSchema = new mongoose.Schema({
   timestamps: true
 });
 
+homeworkSchema.index({ classId: 1 });
+
 const Homework = mongoose.model('Homework', homeworkSchema);
 export default Homework;

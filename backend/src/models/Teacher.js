@@ -67,5 +67,7 @@ teacherSchema.pre('save', async function (next) {
   next();
 });
 
+teacherSchema.index({ user: 1 }, { unique: true });
+
 const Teacher = mongoose.model('Teacher', teacherSchema);
 export default Teacher;

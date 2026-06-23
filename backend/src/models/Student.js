@@ -98,5 +98,10 @@ studentSchema.pre('save', async function (next) {
   next();
 });
 
+studentSchema.index({ user: 1 }, { unique: true });
+studentSchema.index({ rollNumber: 1 }, { unique: true });
+studentSchema.index({ classId: 1 });
+studentSchema.index({ parentEmail: 1 });
+
 const Student = mongoose.model('Student', studentSchema);
 export default Student;

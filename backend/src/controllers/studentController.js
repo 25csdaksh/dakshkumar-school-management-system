@@ -142,13 +142,24 @@ export const getStudentDashboard = async (req, res) => {
       return res.status(404).json({ message: 'Student records not found' });
     }
 
-    // Attendance stats
-    const totalDays = await Attendance.countDocuments({ student: studentUserId });
-    const presentDays = await Attendance.countDocuments({ student: studentUserId, status: 'Present' });
+    // Fetch dashboard records in parallel for high performance
+    const [totalDays, presentDays, grades, fees, notices] = await Promise.all([
+      Attendance.countDocuments({ student: studentUserId }),
+      Attendance.countDocuments({ student: studentUserId, status: 'Present' }),
+      Result.find({ student: studentUserId }).populate('subjectId').populate('examId').sort({ createdAt: -1 }).limit(5),
+      Fee.find({ student: studentUserId }).sort({ dueDate: 1 }),
+      Notice.find({
+        targetAudience: { $in: ['All', 'Students', 'Parents'] },
+        $or: [
+          { targetUser: { $exists: false } },
+          { targetUser: null },
+          { targetUser: studentUserId }
+        ]
+      }).sort({ createdAt: -1 }).limit(5)
+    ]);
+
     const attendancePercentage = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
 
-    // Grades (Results)
-    const grades = await Result.find({ student: studentUserId }).populate('subjectId').populate('examId').sort({ createdAt: -1 }).limit(5);
     const formattedGrades = grades.map(g => ({
       _id: g._id,
       subjectName: g.subjectId?.name || 'Subject',
@@ -157,19 +168,6 @@ export const getStudentDashboard = async (req, res) => {
       maxMarks: g.maxMarks,
       remarks: g.remarks
     }));
-
-    // Invoices
-    const fees = await Fee.find({ student: studentUserId }).sort({ dueDate: 1 });
-
-    // Notices (only fetch global or ones targeted to this student)
-    const notices = await Notice.find({
-      targetAudience: { $in: ['All', 'Students', 'Parents'] },
-      $or: [
-        { targetUser: { $exists: false } },
-        { targetUser: null },
-        { targetUser: studentUserId }
-      ]
-    }).sort({ createdAt: -1 }).limit(5);
 
     res.json({
       student: {

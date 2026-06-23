@@ -42,5 +42,7 @@ const resultSchema = new mongoose.Schema({
   timestamps: true
 });
 
+resultSchema.index({ student: 1 });
+
 const Result = mongoose.model('Result', resultSchema);
 export default Result;
