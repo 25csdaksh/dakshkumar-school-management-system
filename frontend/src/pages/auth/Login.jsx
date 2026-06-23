@@ -349,6 +349,8 @@ export const Login = () => {
                     </span>
                     <input 
                       type="email"
+                      name="email"
+                      autoComplete="username"
                       placeholder="Email Address"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
@@ -376,6 +378,8 @@ export const Login = () => {
                     </span>
                     <input 
                       type="password"
+                      name="password"
+                      autoComplete="current-password"
                       placeholder="Password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
