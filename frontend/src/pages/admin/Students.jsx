@@ -623,6 +623,8 @@ export const Students = () => {
                 <li><strong>section</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. 1 or A, will resolve 1 to A)</span></li>
                 <li><strong>mobile no.</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional contact)</span></li>
                 <li><strong>emai ID</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional parent email)</span></li>
+                <li><strong>parent name</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. Father/Mother Name)</span></li>
+                <li><strong>parent phone</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional parent contact)</span></li>
                 <li><strong>address</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional residence)</span></li>
                 <li><strong>cetegary</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional social category, e.g. open, obc, sc, st)</span></li>
                 <li><strong>GR NO</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional fallback ID)</span></li>

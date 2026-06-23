@@ -416,6 +416,12 @@ export const importStudents = async (req, res) => {
       const categoryRaw = getRowValue(row, ['category', 'cetegary', 'cetogary', 'caste', 'class category']);
       const category = categoryRaw ? String(categoryRaw).trim() : 'open';
 
+      const parentNameRaw = getRowValue(row, ['parent name', 'father name', 'mother name', 'guardian name', 'parentName', 'parent_name', 'guardian']);
+      const parentName = parentNameRaw ? String(parentNameRaw).trim() : '';
+
+      const parentPhoneRaw = getRowValue(row, ['parent phone', 'parent mobile', 'father phone', 'mother phone', 'parentPhone', 'parent_phone', 'mobile no.', 'mobile no', 'mobile', 'Phone', 'phone']);
+      const parentPhone = parentPhoneRaw ? String(parentPhoneRaw).trim() : '';
+
       // Check required fields
       if (!grNo) {
         validationErrors.push(`Row ${rowIndex}: Student ID (or GR No) is missing.`);
@@ -458,7 +464,9 @@ export const importStudents = async (req, res) => {
         parentEmail,
         phone,
         address,
-        category
+        category,
+        parentName,
+        parentPhone
       });
     }
 
@@ -518,7 +526,8 @@ export const importStudents = async (req, res) => {
         classId: data.classId,
         section: data.section,
         parentEmail: data.parentEmail || `parent_${data.grNo}@school.com`,
-        parentPhone: data.phone || '',
+        parentName: data.parentName || '',
+        parentPhone: data.parentPhone || data.phone || '',
         address: data.address || '',
         category: data.category || 'open'
       });
