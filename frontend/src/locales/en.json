@@ -50,5 +50,14 @@
   "Transport & Fleet": "Transport & Fleet",
   "Staff Leave Review": "Staff Leave Review",
   "Reports": "Reports",
-  "Settings": "Settings"
+  "Settings": "Settings",
+  "change_password_title": "Change Your Password",
+  "change_password_subtitle": "This is your first login. Please set a secure password before continuing.",
+  "new_password": "New Password",
+  "confirm_password": "Confirm New Password",
+  "change_password_button": "Update Password",
+  "passwords_dont_match": "Passwords do not match",
+  "password_length_error": "Password must be at least 6 characters long",
+  "password_change_success": "Password changed successfully!",
+  "updating_password": "Updating..."
 }

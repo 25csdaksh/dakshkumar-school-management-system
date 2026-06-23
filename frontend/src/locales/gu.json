@@ -50,5 +50,14 @@
   "Transport & Fleet": "પરિવહન અને કાફલો",
   "Staff Leave Review": "સ્ટાફ રજા સમીક્ષા",
   "Reports": "અહેવાલો",
-  "Settings": "સેટિંગ્સ"
+  "Settings": "સેટિંગ્સ",
+  "change_password_title": "તમારો પાસવર્ડ બદલો",
+  "change_password_subtitle": "આ તમારું પ્રથમ લોગિન છે. કૃપા કરીને આગળ વધતા પહેલા એક સુરક્ષિત પાસવર્ડ સેટ કરો.",
+  "new_password": "નવો પાસવર્ડ",
+  "confirm_password": "નવા પાસવર્ડની પુષ્ટિ કરો",
+  "change_password_button": "પાસવર્ડ અપડેટ કરો",
+  "passwords_dont_match": "પાસવર્ડ મેળ ખાતા નથી",
+  "password_length_error": "પાસવર્ડ ઓછામાં ઓછો 6 અક્ષરોનો હોવો જોઈએ",
+  "password_change_success": "પાસવર્ડ સફળતાપૂર્વક બદલાઈ ગયો છે!",
+  "updating_password": "અપડેટ કરી રહ્યા છીએ..."
 }

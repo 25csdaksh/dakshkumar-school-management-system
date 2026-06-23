@@ -6,6 +6,8 @@ import Result from '../models/Result.js';
 import Fee from '../models/Fee.js';
 import Notice from '../models/Notice.js';
 import Homework from '../models/Homework.js';
+import Class from '../models/Class.js';
+import xlsx from 'xlsx';
 
 
 // @desc    Admin: Register a new student
@@ -317,6 +319,189 @@ export const updateStudent = async (req, res) => {
     await student.save();
 
     res.json({ message: 'Student updated successfully', data: { user, student } });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Admin: Import students from Excel/CSV
+// @route   POST /api/student/admin/import
+export const importStudents = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ message: 'No file uploaded' });
+  }
+
+  try {
+    const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
+    const sheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[sheetName];
+    const rows = xlsx.utils.sheet_to_json(worksheet);
+
+    if (rows.length === 0) {
+      return res.status(400).json({ message: 'The uploaded file is empty' });
+    }
+
+    const validationErrors = [];
+    const studentRole = await Role.findOne({ name: 'student' });
+    if (!studentRole) {
+      return res.status(500).json({ message: 'Student role not found in system' });
+    }
+
+    // Phase 1: Validate rows
+    const rowsToProcess = [];
+    const seenGrNos = new Set();
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const rowIndex = i + 2; // Row number in Excel sheet (1-indexed + header row)
+
+      // Normalize fields
+      const grNoRaw = row['GR No'] || row['GR Number'] || row['Roll Number'] || row['grNo'] || row['Gr No'] || row['id'] || row['ID'] || row['GrNo'] || row['Gr number'] || row['Roll number'];
+      const grNo = grNoRaw ? String(grNoRaw).trim() : '';
+
+      const nameRaw = row['Name'] || row['name'] || row['Full Name'] || row['Student Name'] || row['fullName'] || row['studentName'];
+      const name = nameRaw ? String(nameRaw).trim() : '';
+
+      const classNameRaw = row['Class'] || row['class'] || row['Grade'] || row['Grade Class'] || row['grade'] || row['className'];
+      const className = classNameRaw ? String(classNameRaw).trim() : '';
+
+      const sectionRaw = row['Section'] || row['section'] || row['Division'] || row['division'] || 'A';
+      const section = String(sectionRaw).trim().toUpperCase();
+
+      const parentEmailRaw = row['Parent Email'] || row['parentEmail'] || row['Parent’s Email'] || row['Parent\'s Email'] || row['parentemail'] || row['Parent email'];
+      const parentEmail = parentEmailRaw ? String(parentEmailRaw).trim().toLowerCase() : '';
+
+      const phoneRaw = row['Phone'] || row['phone'] || row['Contact'] || row['Mobile'] || row['phoneNo'] || row['phone_number'];
+      const phone = phoneRaw ? String(phoneRaw).trim() : '';
+
+      // Check required fields
+      if (!grNo) {
+        validationErrors.push(`Row ${rowIndex}: GR No (Student ID) is missing.`);
+      }
+      if (!name) {
+        validationErrors.push(`Row ${rowIndex}: Student Name is missing.`);
+      }
+      if (!className) {
+        validationErrors.push(`Row ${rowIndex}: Class Name is missing.`);
+      }
+
+      if (!grNo || !name || !className) {
+        continue; // skip further checks for this row
+      }
+
+      // Check duplicates in the uploaded sheet
+      if (seenGrNos.has(grNo)) {
+        validationErrors.push(`Row ${rowIndex}: Duplicate GR No "${grNo}" found in the uploaded file.`);
+      } else {
+        seenGrNos.add(grNo);
+      }
+
+      // Resolve class
+      const classDoc = await Class.findOne({ name: new RegExp('^' + className.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') + '$', 'i') });
+      if (!classDoc) {
+        validationErrors.push(`Row ${rowIndex}: Class "${className}" was not found in the database.`);
+        continue;
+      }
+
+      rowsToProcess.push({
+        grNo,
+        name,
+        classId: classDoc._id,
+        className: classDoc.name,
+        section,
+        parentEmail,
+        phone
+      });
+    }
+
+    // If there are validation errors, return them immediately
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ errors: validationErrors });
+    }
+
+    // Phase 2: Process valid rows
+    const createdCredentials = [];
+    let skippedCount = 0;
+
+    const generateRandomPassword = () => {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      let pwd = '';
+      for (let i = 0; i < 8; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pwd;
+    };
+
+    for (const data of rowsToProcess) {
+      // Check if student already exists by GR number (rollNumber)
+      const existingStudent = await Student.findOne({ rollNumber: data.grNo });
+      if (existingStudent) {
+        skippedCount++;
+        continue;
+      }
+
+      // Check if user already exists by generated email
+      const studentEmail = `${data.grNo}@school.com`;
+      const existingUser = await User.findOne({ email: studentEmail });
+      if (existingUser) {
+        skippedCount++;
+        continue;
+      }
+
+      const tempPassword = generateRandomPassword();
+
+      // 1. Create User
+      const user = new User({
+        name: data.name,
+        email: studentEmail,
+        password: tempPassword,
+        role: studentRole._id,
+        phone: data.phone || '',
+        isFirstLogin: true
+      });
+      const savedUser = await user.save();
+
+      // 2. Create Student
+      const student = new Student({
+        user: savedUser._id,
+        name: savedUser.name,
+        rollNumber: data.grNo,
+        classId: data.classId,
+        section: data.section,
+        parentEmail: data.parentEmail || `parent_${data.grNo}@school.com`
+      });
+      await student.save();
+
+      createdCredentials.push({
+        'GR No (Student ID)': data.grNo,
+        'Student Name': data.name,
+        'Grade Class': data.className,
+        'Section': data.section,
+        'Generated Email': studentEmail,
+        'Temporary Password': tempPassword
+      });
+    }
+
+    // Phase 3: Respond with credentials spreadsheet or message
+    if (createdCredentials.length === 0) {
+      return res.json({ 
+        message: `Import complete. All ${rowsToProcess.length} students already exist. No new accounts created.`, 
+        skippedCount 
+      });
+    }
+
+    // Create a new Excel workbook
+    const ws = xlsx.utils.json_to_sheet(createdCredentials);
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, ws, 'Credentials');
+
+    // Generate buffer
+    const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=student_credentials.xlsx');
+    res.send(buffer);
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

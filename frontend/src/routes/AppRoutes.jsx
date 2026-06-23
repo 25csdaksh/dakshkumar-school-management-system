@@ -11,6 +11,7 @@ import ParentLayout from '../layouts/ParentLayout.jsx';
 // Pages
 import Login from '../pages/auth/Login.jsx';
 import ForgotPassword from '../pages/auth/ForgotPassword.jsx';
+import ChangePasswordFirst from '../pages/auth/ChangePasswordFirst.jsx';
 
 // Admin Pages
 import AdminDashboard from '../pages/admin/Dashboard.jsx';
@@ -66,6 +67,11 @@ export const AppRoutes = () => {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/change-password-first" element={
+        <PrivateRoute bypassFirstLoginCheck={true}>
+          <ChangePasswordFirst />
+        </PrivateRoute>
+      } />
 
       {/* Admin Protected Routes */}
       <Route path="/admin/*" element={

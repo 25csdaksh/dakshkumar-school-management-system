@@ -2,7 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
-export const PrivateRoute = ({ children, allowedRoles }) => {
+export const PrivateRoute = ({ children, allowedRoles, bypassFirstLoginCheck }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
@@ -22,6 +22,11 @@ export const PrivateRoute = ({ children, allowedRoles }) => {
   if (!user) {
     // Redirect to login page if not logged in
     return <Navigate to="/login" replace />;
+  }
+
+  if (user && user.isFirstLogin && !bypassFirstLoginCheck) {
+    // Redirect to first-time password change page
+    return <Navigate to="/change-password-first" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {

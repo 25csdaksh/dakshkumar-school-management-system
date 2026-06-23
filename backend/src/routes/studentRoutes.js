@@ -11,13 +11,18 @@ import {
   getStudentGrades,
   getStudentFees,
   getParentDashboard,
-  getStudentHomework
+  getStudentHomework,
+  importStudents
 } from '../controllers/studentController.js';
+import multer from 'multer';
+
+const upload = multer({ storage: multer.memoryStorage() });
 
 const router = express.Router();
 
 // Admin: register/retrieve/delete student
 router.post('/admin', protect, authorize('admin'), createStudent);
+router.post('/admin/import', protect, authorize('admin'), upload.single('file'), importStudents);
 router.get('/admin', protect, authorize('admin'), getStudents);
 router.put('/admin/:id', protect, authorize('admin'), updateStudent);
 router.delete('/admin/:id', protect, authorize('admin'), deleteStudent);

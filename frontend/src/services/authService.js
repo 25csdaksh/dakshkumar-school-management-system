@@ -54,6 +54,19 @@ export const authService = {
 
   getNotifications: async () => {
     return await apiCall('/auth/notifications');
+  },
+
+  changePasswordFirst: async (newPassword) => {
+    const data = await apiCall('/auth/change-password-first', {
+      method: 'POST',
+      body: JSON.stringify({ newPassword })
+    });
+    const user = authService.getCurrentUser();
+    if (user) {
+      user.isFirstLogin = false;
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+    return data;
   }
 };
 

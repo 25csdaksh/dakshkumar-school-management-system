@@ -19,7 +19,19 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email }).populate('role');
+    let query = {};
+    if (email && email.includes('@')) {
+      query = { email: email.toLowerCase() };
+    } else {
+      const student = await Student.findOne({ rollNumber: email });
+      if (student) {
+        query = { _id: student.user };
+      } else {
+        query = { email: email };
+      }
+    }
+
+    const user = await User.findOne(query).populate('role');
     if (!user || !(await user.comparePassword(password))) {
       await ActivityLog.create({
         email,
@@ -71,6 +83,7 @@ export const loginUser = async (req, res) => {
       phone: user.phone,
       address: user.address,
       profilePicture: user.profilePicture,
+      isFirstLogin: user.isFirstLogin || false,
       studentInfo,
       teacherInfo,
       token: generateToken(user._id)
@@ -114,6 +127,7 @@ export const getMe = async (req, res) => {
       phone: user.phone,
       address: user.address,
       profilePicture: user.profilePicture,
+      isFirstLogin: user.isFirstLogin || false,
       studentInfo,
       teacherInfo
     });
@@ -532,6 +546,30 @@ export const getNotifications = async (req, res) => {
     }).sort({ createdAt: -1 }).limit(20);
 
     res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Change password on first login
+// @route   POST /api/auth/change-password-first
+export const changePasswordFirst = async (req, res) => {
+  const { newPassword } = req.body;
+  if (!newPassword || newPassword.trim().length < 6) {
+    return res.status(400).json({ message: 'Password must be at least 6 characters long' });
+  }
+
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.password = newPassword;
+    user.isFirstLogin = false;
+    await user.save();
+
+    res.json({ message: 'Password changed successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

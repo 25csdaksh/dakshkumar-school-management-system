@@ -44,7 +44,11 @@ const userSchema = new mongoose.Schema({
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   otpCode: String,
-  otpExpire: Date
+  otpExpire: Date,
+  isFirstLogin: {
+    type: Boolean,
+    default: false
+  }
 }, {
   timestamps: true
 });

@@ -157,6 +157,38 @@ export const studentService = {
     return await apiCall(`/admin/classes/${id}`, {
       method: 'DELETE'
     });
+  },
+
+  importStudents: async (file) => {
+    const token = localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+    const response = await fetch(`${API_URL}/student/admin/import`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    if (!response.ok) {
+      const errData = await response.json().catch(() => ({}));
+      if (errData.errors && errData.errors.length > 0) {
+        const error = new Error('Validation failed');
+        error.validationErrors = errData.errors;
+        throw error;
+      }
+      throw new Error(errData.message || 'Failed to import students');
+    }
+
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      return await response.json();
+    }
+
+    return await response.blob();
   }
 };
 

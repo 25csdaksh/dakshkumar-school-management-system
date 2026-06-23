@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { studentService } from '../../services/studentService.js';
-import { Plus, Trash2, Edit, Contact, UserPlus, X } from 'lucide-react';
+import { Plus, Trash2, Edit, Contact, UserPlus, X, Upload } from 'lucide-react';
 import { getProfilePictureUrl } from '../../services/api.js';
 
 export const Students = () => {
@@ -24,6 +24,13 @@ export const Students = () => {
   
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Import Excel States
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importFile, setImportFile] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importErrors, setImportErrors] = useState([]);
+  const [importSuccessMsg, setImportSuccessMsg] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -126,6 +133,44 @@ export const Students = () => {
     }
   };
 
+  const handleImportSubmit = async (e) => {
+    e.preventDefault();
+    if (!importFile) return;
+
+    setImportLoading(true);
+    setImportErrors([]);
+    setImportSuccessMsg('');
+
+    try {
+      const result = await studentService.importStudents(importFile);
+      
+      if (result instanceof Blob) {
+        const url = window.URL.createObjectURL(result);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'student_credentials.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+        
+        setImportSuccessMsg('Students imported successfully! Credentials sheet downloaded.');
+      } else {
+        setImportSuccessMsg(result.message || 'Import complete.');
+      }
+      
+      fetchData(); // Refresh registry list
+    } catch (err) {
+      if (err.validationErrors && err.validationErrors.length > 0) {
+        setImportErrors(err.validationErrors);
+      } else {
+        setImportErrors([err.message || 'Failed to import students. Please try again.']);
+      }
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
@@ -133,10 +178,21 @@ export const Students = () => {
           <h2>Student Registry</h2>
           <p style={{ color: 'var(--text-muted)' }}>Configure details, enrollments, and parent link profiles.</p>
         </div>
-        <button className="btn btn-primary" onClick={handleOpenAddModal}>
-          <Plus size={18} />
-          <span>Add Student</span>
-        </button>
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button className="btn btn-secondary" onClick={() => {
+            setImportFile(null);
+            setImportErrors([]);
+            setImportSuccessMsg('');
+            setShowImportModal(true);
+          }} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Upload size={18} />
+            <span>Import Excel</span>
+          </button>
+          <button className="btn btn-primary" onClick={handleOpenAddModal}>
+            <Plus size={18} />
+            <span>Add Student</span>
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -419,6 +475,118 @@ export const Students = () => {
               </button>
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* Import Excel Modal */}
+      {showImportModal && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '520px' }}>
+            <button className="modal-close" onClick={() => setShowImportModal(false)}>
+              <X size={20} />
+            </button>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+              <Upload size={20} color="var(--primary)" />
+              <span>Import Students from Excel</span>
+            </h3>
+
+            {/* Template Column details */}
+            <div className="glass-panel" style={{
+              background: 'var(--bg-app)',
+              padding: '16px',
+              borderRadius: '12px',
+              fontSize: '0.8rem',
+              marginBottom: '20px',
+              border: '1px solid var(--border-color)'
+            }}>
+              <strong style={{ color: 'var(--text-main)', display: 'block', marginBottom: '6px' }}>Excel Sheet Format Required:</strong>
+              <p style={{ margin: '0 0 8px 0', color: 'var(--text-muted)' }}>
+                Your spreadsheet must contain headers in the first row. The following columns are processed:
+              </p>
+              <ul style={{ margin: 0, paddingLeft: '20px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                <li><strong>GR No</strong> / <strong>Roll Number</strong> <span style={{ color: 'var(--danger)' }}>*</span></li>
+                <li><strong>Name</strong> <span style={{ color: 'var(--danger)' }}>*</span></li>
+                <li><strong>Class</strong> <span style={{ color: 'var(--danger)' }}>*</span> <span style={{ color: 'var(--text-muted)' }}>(Must match class name exactly)</span></li>
+                <li><strong>Section</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, defaults to A)</span></li>
+                <li><strong>Parent Email</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, auto-generated if blank)</span></li>
+                <li><strong>Phone</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional)</span></li>
+              </ul>
+            </div>
+
+            <form onSubmit={handleImportSubmit}>
+              <div className="form-group" style={{ marginBottom: '20px' }}>
+                <label className="form-label">Select Excel File (.xlsx / .csv)</label>
+                <input
+                  type="file"
+                  accept=".xlsx, .xls, .csv"
+                  className="form-control"
+                  onChange={(e) => setImportFile(e.target.files[0])}
+                  required
+                  style={{ padding: '8px' }}
+                />
+              </div>
+
+              {/* Import success message */}
+              {importSuccessMsg && (
+                <div style={{
+                  background: 'var(--success-glow)',
+                  color: 'var(--success)',
+                  padding: '12px',
+                  borderRadius: '8px',
+                  fontSize: '0.8rem',
+                  border: '1px solid var(--success)',
+                  marginBottom: '20px',
+                  textAlign: 'center'
+                }}>{importSuccessMsg}</div>
+              )}
+
+              {/* Import Validation Errors */}
+              {importErrors.length > 0 && (
+                <div style={{
+                  background: 'var(--danger-glow)',
+                  color: 'var(--danger)',
+                  padding: '16px',
+                  borderRadius: '12px',
+                  fontSize: '0.8rem',
+                  border: '1px solid var(--danger)',
+                  marginBottom: '20px',
+                  maxHeight: '180px',
+                  overflowY: 'auto',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px'
+                }}>
+                  <strong style={{ display: 'block', fontSize: '0.85rem' }}>Import errors found:</strong>
+                  {importErrors.map((err, idx) => (
+                    <div key={idx} style={{ paddingLeft: '8px', borderLeft: '2px solid var(--danger)' }}>{err}</div>
+                  ))}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="btn btn-primary w-full"
+                disabled={importLoading || !importFile}
+                style={{
+                  padding: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  marginTop: '10px'
+                }}
+              >
+                {importLoading ? (
+                  <span>Processing...</span>
+                ) : (
+                  <>
+                    <Upload size={16} />
+                    <span>Upload & Process</span>
+                  </>
+                )}
+              </button>
+            </form>
           </div>
         </div>
       )}

@@ -50,5 +50,14 @@
   "Transport & Fleet": "परिवहन और बेड़ा",
   "Staff Leave Review": "स्टाफ अवकाश समीक्षा",
   "Reports": "रिपोर्ट",
-  "Settings": "सेटिंग्स"
+  "Settings": "सेटिंग्स",
+  "change_password_title": "अपना पासवर्ड बदलें",
+  "change_password_subtitle": "यह आपका पहला लॉगिन है। कृपया आगे बढ़ने से पहले एक सुरक्षित पासवर्ड सेट करें।",
+  "new_password": "नया पासवर्ड",
+  "confirm_password": "नए पासवर्ड की पुष्टि करें",
+  "change_password_button": "पासवर्ड अपडेट करें",
+  "passwords_dont_match": "पासवर्ड मेल नहीं खाते",
+  "password_length_error": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए",
+  "password_change_success": "पासवर्ड सफलतापूर्वक बदला गया!",
+  "updating_password": "अपडेट कर रहे हैं..."
 }
