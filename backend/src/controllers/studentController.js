@@ -347,6 +347,19 @@ export const importStudents = async (req, res) => {
       return res.status(500).json({ message: 'Student role not found in system' });
     }
 
+    // Helper to find a value case- and punctuation-insensitively
+    const getRowValue = (r, possibleKeys) => {
+      const keys = Object.keys(r);
+      for (const pKey of possibleKeys) {
+        const target = pKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const foundKey = keys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === target);
+        if (foundKey !== undefined) {
+          return r[foundKey];
+        }
+      }
+      return undefined;
+    };
+
     // Phase 1: Validate rows
     const rowsToProcess = [];
     const seenGrNos = new Set();
@@ -357,17 +370,17 @@ export const importStudents = async (req, res) => {
 
       // Normalize fields according to the screenshot columns:
       // GR NO, Student ID, name, class, section, mobile no., emai ID, address
-      const studentIdRaw = row['Student ID'] || row['StudentID'] || row['studentId'] || row['student_id'];
-      const grNoRaw = studentIdRaw || row['GR NO'] || row['GR No'] || row['Gr No'] || row['grNo'] || row['GR Number'] || row['id'] || row['ID'];
+      const studentIdRaw = getRowValue(row, ['Student ID', 'studentId', 'student_id']);
+      const grNoRaw = studentIdRaw || getRowValue(row, ['GR NO', 'GR No', 'Gr No', 'grNo', 'GR Number', 'GR no.', 'GR no', 'id', 'ID']);
       const grNo = grNoRaw ? String(grNoRaw).trim() : '';
 
-      const nameRaw = row['name'] || row['Name'] || row['Full Name'] || row['Student Name'] || row['fullName'] || row['studentName'];
+      const nameRaw = getRowValue(row, ['name', 'Name', 'Full Name', 'Student Name', 'fullName', 'studentName']);
       const name = nameRaw ? String(nameRaw).trim() : '';
 
-      const classNameRaw = row['class'] || row['Class'] || row['Grade'] || row['Grade Class'] || row['grade'] || row['className'];
+      const classNameRaw = getRowValue(row, ['class', 'Class', 'Grade', 'Grade Class', 'grade', 'className']);
       const className = classNameRaw ? String(classNameRaw).trim() : '';
 
-      const sectionRaw = row['section'] || row['Section'] || row['Division'] || row['division'] || 'A';
+      const sectionRaw = getRowValue(row, ['section', 'Section', 'Division', 'division']) || 'A';
       let section = 'A';
       if (sectionRaw) {
         const trimmedSec = String(sectionRaw).trim().toUpperCase();
@@ -377,13 +390,13 @@ export const importStudents = async (req, res) => {
         else section = trimmedSec;
       }
 
-      const parentEmailRaw = row['emai ID'] || row['emai id'] || row['email ID'] || row['email id'] || row['Email'] || row['email'] || row['Parent Email'] || row['parentEmail'] || row['Parent\'s Email'];
+      const parentEmailRaw = getRowValue(row, ['emai ID', 'emai id', 'email ID', 'email id', 'Email', 'email', 'Parent Email', 'parentEmail', "Parent's Email"]);
       const parentEmail = parentEmailRaw ? String(parentEmailRaw).trim().toLowerCase() : '';
 
-      const phoneRaw = row['mobile no.'] || row['mobile no'] || row['mobile'] || row['Phone'] || row['phone'] || row['Contact'] || row['Mobile'] || row['phoneNo'] || row['phone_number'];
+      const phoneRaw = getRowValue(row, ['mobile no.', 'mobile no', 'mobile', 'Phone', 'phone', 'Contact', 'Mobile', 'phoneNo', 'phone_number']);
       const phone = phoneRaw ? String(phoneRaw).trim() : '';
 
-      const addressRaw = row['address'] || row['Address'] || row['Residence'] || row['residence'];
+      const addressRaw = getRowValue(row, ['address', 'Address', 'Residence', 'residence']);
       const address = addressRaw ? String(addressRaw).trim() : '';
 
       // Check required fields
