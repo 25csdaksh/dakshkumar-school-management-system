@@ -116,7 +116,7 @@ export const deleteStudent = async (req, res) => {
 
 // @desc    Get dashboard metrics for student
 export const getStudentDashboard = async (req, res) => {
-  const studentUserId = req.user.role === 'student' ? req.user._id : req.query.studentId;
+  const studentUserId = req.user.role.name === 'student' ? req.user._id : req.query.studentId;
 
   if (!studentUserId) {
     return res.status(400).json({ message: 'Student User ID is required' });
@@ -183,7 +183,7 @@ export const getStudentDashboard = async (req, res) => {
 
 // @desc    Get detailed attendance list for student
 export const getStudentAttendance = async (req, res) => {
-  const studentUserId = req.user.role === 'student' ? req.user._id : req.query.studentId;
+  const studentUserId = req.user.role.name === 'student' ? req.user._id : req.query.studentId;
   try {
     const logs = await Attendance.find({ student: studentUserId })
       .populate('classId', 'name')
@@ -196,7 +196,7 @@ export const getStudentAttendance = async (req, res) => {
 
 // @desc    Get detailed results list for student
 export const getStudentGrades = async (req, res) => {
-  const studentUserId = req.user.role === 'student' ? req.user._id : req.query.studentId;
+  const studentUserId = req.user.role.name === 'student' ? req.user._id : req.query.studentId;
   try {
     const logs = await Result.find({ student: studentUserId }).populate('subjectId').populate('examId').sort({ createdAt: -1 });
     const formatted = logs.map(g => ({
@@ -215,7 +215,7 @@ export const getStudentGrades = async (req, res) => {
 
 // @desc    Get bills list for student
 export const getStudentFees = async (req, res) => {
-  const studentUserId = req.user.role === 'student' ? req.user._id : req.query.studentId;
+  const studentUserId = req.user.role.name === 'student' ? req.user._id : req.query.studentId;
   try {
     const bills = await Fee.find({ student: studentUserId }).sort({ dueDate: 1 });
     res.json(bills);
@@ -254,7 +254,7 @@ export const getParentDashboard = async (req, res) => {
 // @desc    Get homework assignments list for student
 // @route   GET /api/student/homework
 export const getStudentHomework = async (req, res) => {
-  const studentUserId = req.user.role === 'student' ? req.user._id : req.query.studentId;
+  const studentUserId = req.user.role.name === 'student' ? req.user._id : req.query.studentId;
 
   if (!studentUserId) {
     return res.status(400).json({ message: 'Student ID is required' });

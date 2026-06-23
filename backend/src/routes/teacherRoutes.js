@@ -14,6 +14,14 @@ import {
   reviewLeave,
   getSalaryDetails
 } from '../controllers/teacherController.js';
+import {
+  markAttendance,
+  getAttendanceRecord
+} from '../controllers/attendanceController.js';
+import {
+  addOrUpdateGrade,
+  getGradesByClass
+} from '../controllers/resultController.js';
 
 const router = express.Router();
 
@@ -31,5 +39,13 @@ router.get('/classes/:classId/students', protect, authorize('teacher', 'admin'),
 router.post('/leaves', protect, authorize('teacher'), applyLeave);
 router.get('/leaves', protect, authorize('teacher'), getMyLeaves);
 router.get('/salary', protect, authorize('teacher'), getSalaryDetails);
+
+// Attendance operations
+router.post('/attendance', protect, authorize('teacher', 'admin'), markAttendance);
+router.get('/classes/:classId/attendance', protect, authorize('teacher', 'admin'), getAttendanceRecord);
+
+// Grade operations
+router.post('/grades', protect, authorize('teacher', 'admin'), addOrUpdateGrade);
+router.get('/classes/:classId/grades', protect, authorize('teacher', 'admin'), getGradesByClass);
 
 export default router;

@@ -30,6 +30,7 @@ export const BaseLayout = ({ children, menuItems }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const [notifications, setNotifications] = useState([]);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -67,6 +68,14 @@ export const BaseLayout = ({ children, menuItems }) => {
     navigate('/login');
   };
 
+  const handleHamburgerClick = () => {
+    if (window.innerWidth <= 768) {
+      setSidebarOpen(!sidebarOpen);
+    } else {
+      setSidebarCollapsed(!sidebarCollapsed);
+    }
+  };
+
   const getIcon = (iconName) => {
     switch (iconName) {
       case 'dashboard': return <LayoutDashboard size={20} />;
@@ -90,22 +99,13 @@ export const BaseLayout = ({ children, menuItems }) => {
 
   return (
     <div className="app-container">
-      {/* Mobile Hamburger toggle */}
-      <button 
-        className="theme-toggle" 
-        style={{ position: 'fixed', bottom: '20px', right: '20px', zIndex: 1000, display: 'none' }} // fallback custom trigger
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-      >
-        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
+      {/* Mobile Sidebar overlay */}
+      {sidebarOpen && (
+        <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />
+      )}
 
       {/* Sidebar Layout */}
-      <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`} style={{
-        '@media (maxWidth: 768px)': {
-          transform: sidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-          position: 'fixed'
-        }
-      }}>
+      <aside className={`sidebar ${sidebarOpen ? 'open' : ''} ${sidebarCollapsed ? 'collapsed' : ''}`}>
         <div className="sidebar-logo">
           <div style={{
             background: 'var(--primary)',
@@ -206,7 +206,7 @@ export const BaseLayout = ({ children, menuItems }) => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             <button 
               className="theme-toggle" 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
+              onClick={handleHamburgerClick}
               style={{ display: 'flex' }}
             >
               <Menu size={20} />

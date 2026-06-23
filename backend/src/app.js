@@ -79,26 +79,7 @@ app.use('/api/resources', resourceRoutes);
 app.use('/api/academic', academicRoutes);
 app.use('/api/ai', aiRoutes);
 
-// ==========================================
-// 5. ATTENDANCE & RESULTS INTERMEDIATES
-// ==========================================
-app.post('/api/teacher/attendance', protect, authorize('teacher', 'admin'), (req, res, next) => {
-  // Pass to attendanceRoutes
-  next();
-}, attendanceRoutes);
-app.get('/api/teacher/classes/:classId/attendance', protect, authorize('teacher', 'admin'), (req, res, next) => {
-  // Pass to attendanceRoutes
-  next();
-}, attendanceRoutes);
 
-app.post('/api/teacher/grades', protect, authorize('teacher', 'admin'), (req, res, next) => {
-  // Pass to resultRoutes
-  next();
-}, resultRoutes);
-app.get('/api/teacher/classes/:classId/grades', protect, authorize('teacher', 'admin'), (req, res, next) => {
-  // Pass to resultRoutes
-  next();
-}, resultRoutes);
 
 // ==========================================
 // 6. ADMIN SYSTEM MANAGEMENT ROUTES

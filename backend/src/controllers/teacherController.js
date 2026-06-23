@@ -303,7 +303,7 @@ export const getSalaryDetails = async (req, res) => {
 export const updateTeacher = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone, teacherInfo } = req.body;
-  const { qualification, salary, designation } = teacherInfo || {};
+  const { qualification, salary, designation, subjects } = teacherInfo || {};
 
   try {
     const user = await User.findById(id);
@@ -316,6 +316,20 @@ export const updateTeacher = async (req, res) => {
 
     const teacher = await Teacher.findOne({ user: id });
     if (!teacher) return res.status(404).json({ message: 'Teacher details not found' });
+
+    if (subjects !== undefined) {
+      const subjectIds = [];
+      for (const subName of subjects) {
+        let subDoc = await Subject.findOne({ name: subName });
+        if (!subDoc) {
+          const code = subName.toUpperCase().slice(0, 4) + Math.round(Math.random() * 100);
+          subDoc = new Subject({ name: subName, code });
+          await subDoc.save();
+        }
+        subjectIds.push(subDoc._id);
+      }
+      teacher.subjects = subjectIds;
+    }
 
     teacher.name = name || user.name;
     teacher.qualification = qualification || teacher.qualification;

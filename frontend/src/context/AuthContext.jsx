@@ -14,8 +14,12 @@ export const AuthProvider = ({ children }) => {
     let savedTheme = localStorage.getItem('theme') || 'light';
     if (cachedUser) {
       setUser(cachedUser);
-      if (savedTheme === 'light' && cachedUser.role === 'parent') {
-        savedTheme = 'parent-light';
+      if (savedTheme === 'light') {
+        if (cachedUser.role === 'parent') {
+          savedTheme = 'parent-light';
+        } else if (cachedUser.role === 'teacher') {
+          savedTheme = 'teacher-light';
+        }
       }
     }
     setTheme(savedTheme);
@@ -29,8 +33,12 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.login(email, password);
       setUser(data);
       let currentTheme = localStorage.getItem('theme') || 'light';
-      if (currentTheme === 'light' && data.role === 'parent') {
-        currentTheme = 'parent-light';
+      if (currentTheme === 'light') {
+        if (data.role === 'parent') {
+          currentTheme = 'parent-light';
+        } else if (data.role === 'teacher') {
+          currentTheme = 'teacher-light';
+        }
       }
       setTheme(currentTheme);
       document.documentElement.setAttribute('data-theme', currentTheme);
@@ -48,8 +56,12 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.register(registerData);
       setUser(data);
       let currentTheme = localStorage.getItem('theme') || 'light';
-      if (currentTheme === 'light' && data.role === 'parent') {
-        currentTheme = 'parent-light';
+      if (currentTheme === 'light') {
+        if (data.role === 'parent') {
+          currentTheme = 'parent-light';
+        } else if (data.role === 'teacher') {
+          currentTheme = 'teacher-light';
+        }
       }
       setTheme(currentTheme);
       document.documentElement.setAttribute('data-theme', currentTheme);
@@ -74,8 +86,12 @@ export const AuthProvider = ({ children }) => {
       const data = await authService.updateProfile(formData);
       setUser(data);
       let currentTheme = localStorage.getItem('theme') || 'light';
-      if (currentTheme === 'light' && data.role === 'parent') {
-        currentTheme = 'parent-light';
+      if (currentTheme === 'light') {
+        if (data.role === 'parent') {
+          currentTheme = 'parent-light';
+        } else if (data.role === 'teacher') {
+          currentTheme = 'teacher-light';
+        }
       }
       setTheme(currentTheme);
       document.documentElement.setAttribute('data-theme', currentTheme);
@@ -91,6 +107,8 @@ export const AuthProvider = ({ children }) => {
     if (isDark) {
       if (user && user.role === 'parent') {
         nextTheme = 'parent-light';
+      } else if (user && user.role === 'teacher') {
+        nextTheme = 'teacher-light';
       } else {
         nextTheme = 'light';
       }
@@ -98,7 +116,7 @@ export const AuthProvider = ({ children }) => {
       nextTheme = 'dark';
     }
     setTheme(nextTheme);
-    localStorage.setItem('theme', nextTheme === 'parent-light' ? 'light' : nextTheme);
+    localStorage.setItem('theme', (nextTheme === 'parent-light' || nextTheme === 'teacher-light') ? 'light' : nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
   };
 
