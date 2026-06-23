@@ -224,8 +224,24 @@ export const BaseLayout = ({ children, menuItems }) => {
             >
               <Menu size={20} />
             </button>
-            <div className="page-title">
+            <div className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h1>{t('school_erp_portal')}</h1>
+              {user?.role && (
+                <span style={{ 
+                  fontSize: '0.8rem', 
+                  padding: '3px 10px', 
+                  borderRadius: '20px', 
+                  background: 'rgba(255, 255, 255, 0.12)', 
+                  border: '1px solid rgba(255, 255, 255, 0.25)',
+                  color: '#ffffff',
+                  fontWeight: '600',
+                  textTransform: 'capitalize',
+                  display: 'inline-flex',
+                  alignItems: 'center'
+                }}>
+                  {user.role} Portal
+                </span>
+              )}
             </div>
           </div>
 
