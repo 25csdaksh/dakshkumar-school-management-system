@@ -1017,14 +1017,18 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+  background: linear-gradient(135deg, #073B2A, #031C14);
   padding: 20px;
   position: relative;
   overflow: hidden;
+  --primary: #0A5C43;
+  --primary-glow: rgba(10, 92, 67, 0.15);
+  --secondary: #10B981;
+  --secondary-glow: rgba(16, 185, 129, 0.12);
 }
 
 [data-theme="dark"] .login-page {
-  background: linear-gradient(135deg, #022c22, #064e3b);
+  background: linear-gradient(135deg, #031C14, #010D0A);
   --primary: #10B981;
   --primary-glow: rgba(16, 185, 129, 0.25);
   --secondary: #34D399;
