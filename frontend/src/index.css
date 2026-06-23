@@ -1124,13 +1124,18 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Universal Responsive Grid and Layout Overrides for Mobile Viewports */
 @media (max-width: 768px) {
-  /* Override any 2-column or 3-column inline grid to single column on mobile */
+  /* Override any 2-column, 3-column, or multi-column inline grid to single column on mobile */
   div[style*="grid-template-columns: 1fr 1fr"],
   div[style*="grid-template-columns: 1fr 2fr"],
   div[style*="grid-template-columns: 2fr 1fr"],
   div[style*="grid-template-columns: 1fr 1fr 1fr"],
+  div[style*="grid-template-columns: repeat(2, 1fr)"],
+  div[style*="grid-template-columns: repeat(3, 1fr)"],
+  div[style*="grid-template-columns: repeat(4, 1fr)"],
   form[style*="grid-template-columns: 1fr 1fr"],
   form[style*="grid-template-columns: 1fr 1fr 1fr"],
+  form[style*="grid-template-columns: repeat(2, 1fr)"],
+  form[style*="grid-template-columns: repeat(3, 1fr)"],
   form[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"],
   div[style*="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"] {
     grid-template-columns: 1fr !important;
@@ -1162,4 +1167,32 @@ h1, h2, h3, h4, h5, h6 {
   div[style*="justify-content: space-between"][style*="margin-bottom: 32px"] > select {
     width: 100% !important;
   }
+
+  /* Force table scrolling for custom-table elements on small viewports */
+  .custom-table {
+    min-width: 750px !important;
+  }
 }
+
+@media (max-width: 600px) {
+  .top-navbar {
+    padding: 0 16px !important;
+  }
+  .nav-actions {
+    gap: 8px !important;
+  }
+  .user-profile-summary {
+    padding: 2px 6px !important;
+  }
+  .page-title h1 {
+    font-size: 1.1rem !important;
+  }
+}
+
+@media (max-width: 400px) {
+  .page-title h1 {
+    display: none !important;
+  }
+}
+
+
