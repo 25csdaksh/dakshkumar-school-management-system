@@ -7,21 +7,21 @@
 
   /* Premium Light Mode Palette (60:30:10 Theme Ratio) */
   /* 60% Dominant Color (Main Application Canvas) */
-  --bg-app: #FAF8FC; /* --bg-secondary */
+  --bg-app: #F4F6F9;
   
   /* 30% Structural Elements (Sidebar, Cards, Borders, Base Text hierarchy) */
-  --bg-sidebar: #E83E8C; /* --sidebar */
-  --bg-card: #FFFFFF; /* --bg-primary */
-  --border-color: #edeaf1;
-  --text-main: #1F2937; /* --text-primary */
-  --text-muted: #6B7280; /* --text-secondary */
+  --bg-sidebar: #1E293B; /* Navy Blue for sidebar */
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
   --text-inverse: #ffffff;
   
   /* 10% Accent Callouts (CTA buttons, selected items, active badge outlines) */
-  --primary: #7B2CBF; /* --accent */
-  --primary-glow: rgba(123, 44, 191, 0.15);
-  --secondary: #A855F7; /* --accent-light */
-  --secondary-glow: rgba(168, 85, 247, 0.12);
+  --primary: #10B981; /* Shiny Emerald Green */
+  --primary-glow: rgba(16, 185, 129, 0.15);
+  --secondary: #34D399; /* Mint Green */
+  --secondary-glow: rgba(52, 211, 153, 0.12);
 
   --success: #10b981;
   --success-glow: rgba(16, 185, 129, 0.12);
@@ -30,12 +30,12 @@
   --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: #ffffff;
-  --sidebar-muted: rgba(255, 255, 255, 0.65);
-  --sidebar-active-bg: #7B2CBF;
-  --sidebar-hover-bg: #D63384;
+  --sidebar-text: rgba(255, 255, 255, 0.85);
+  --sidebar-muted: rgba(255, 255, 255, 0.45);
+  --sidebar-active-bg: #10B981;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
   --sidebar-active-text: #ffffff;
-  --bg-sidebar: #E83E8C; /* --sidebar */
+  --bg-sidebar: #1E293B; /* Navy Blue */
 
   --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
   --shadow-md: 0 8px 20px rgba(15, 23, 42, 0.06);
@@ -96,33 +96,33 @@
 
 [data-theme="parent-light"] {
   /* 60% Dominant Canvas: Off-white light gray */
-  --bg-app: #FAF8FC; /* --bg-secondary */
+  --bg-app: #EDEDED;
 
   /* 30% Structural: deep slate teal for sidebar, white for cards, border gray */
-  --bg-sidebar: #E83E8C; /* --sidebar */
-  --bg-card: #FFFFFF; /* --bg-primary */
-  --border-color: #edeaf1;
-  --text-main: #1F2937; /* --text-primary */
-  --text-muted: #6B7280; /* --text-secondary */
+  --bg-sidebar: #0E1F22;
+  --bg-card: #ffffff;
+  --border-color: #d1d5db;
+  --text-main: #0E1F22; /* Primary text matches dark slate */
+  --text-muted: #4b5563;
   --text-inverse: #ffffff;
 
   /* 10% Accent Callouts: Gold highlights */
-  --primary: #7B2CBF; /* --accent */
-  --primary-glow: rgba(123, 44, 191, 0.15);
-  --secondary: #A855F7; /* --accent-light */
-  --secondary-glow: rgba(168, 85, 247, 0.12);
+  --primary: #E2CD8A; /* Champagne Gold */
+  --primary-glow: rgba(226, 205, 138, 0.2);
+  --secondary: #0E1F22;
+  --secondary-glow: rgba(14, 31, 34, 0.12);
 
-  --success: #10B981;
+  --success: #10b981;
   --success-glow: rgba(16, 185, 129, 0.12);
-  --warning: #F59E0B;
+  --warning: #f59e0b;
   --warning-glow: rgba(245, 158, 11, 0.12);
-  --danger: #EF4444;
+  --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: #ffffff;
-  --sidebar-muted: rgba(255, 255, 255, 0.65);
-  --sidebar-active-bg: #7B2CBF;
-  --sidebar-hover-bg: #D63384;
+  --sidebar-text: rgba(255, 255, 255, 0.95);
+  --sidebar-muted: rgba(255, 255, 255, 0.5);
+  --sidebar-active-bg: #E2CD8A;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
   --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(14, 31, 34, 0.05);
@@ -136,33 +136,33 @@
 
 [data-theme="teacher-light"] {
   /* 60% Dominant Canvas: Pale Teal Green */
-  --bg-app: #FAF8FC; /* --bg-secondary */
+  --bg-app: #EBF5F4;
 
   /* 30% Structural: Dark Forest Teal for sidebar, white for cards, border gray */
-  --bg-sidebar: #E83E8C; /* --sidebar */
-  --bg-card: #FFFFFF; /* --bg-primary */
-  --border-color: #edeaf1;
-  --text-main: #1F2937; /* --text-primary */
-  --text-muted: #6B7280; /* --text-secondary */
+  --bg-sidebar: #0E2925;
+  --bg-card: #ffffff;
+  --border-color: #cbd5e1;
+  --text-main: #0f172a;
+  --text-muted: #4b5563;
   --text-inverse: #ffffff;
 
   /* 10% Accent Callouts: Soft Coral Red */
-  --primary: #7B2CBF; /* --accent */
-  --primary-glow: rgba(123, 44, 191, 0.15);
-  --secondary: #A855F7; /* --accent-light */
-  --secondary-glow: rgba(168, 85, 247, 0.12);
+  --primary: #F05454;
+  --primary-glow: rgba(240, 84, 84, 0.15);
+  --secondary: #14B8A6;
+  --secondary-glow: rgba(20, 184, 166, 0.12);
 
-  --success: #10B981;
+  --success: #10b981;
   --success-glow: rgba(16, 185, 129, 0.12);
-  --warning: #F59E0B;
+  --warning: #f59e0b;
   --warning-glow: rgba(245, 158, 11, 0.12);
-  --danger: #EF4444;
+  --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: #ffffff;
-  --sidebar-muted: rgba(255, 255, 255, 0.65);
-  --sidebar-active-bg: #7B2CBF;
-  --sidebar-hover-bg: #D63384;
+  --sidebar-text: rgba(255, 255, 255, 0.95);
+  --sidebar-muted: rgba(255, 255, 255, 0.5);
+  --sidebar-active-bg: #F05454;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
   --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(14, 41, 37, 0.05);
@@ -176,33 +176,33 @@
 
 [data-theme="student-light"] {
   /* 60% Dominant Canvas: Mint White */
-  --bg-app: #FAF8FC; /* --bg-secondary */
+  --bg-app: #F4FDF7;
 
   /* 30% Structural: Emerald Green for sidebar, white for cards, border light-green, deep green text */
-  --bg-sidebar: #E83E8C; /* --sidebar */
-  --bg-card: #FFFFFF; /* --bg-primary */
-  --border-color: #edeaf1;
-  --text-main: #1F2937; /* --text-primary */
-  --text-muted: #6B7280; /* --text-secondary */
+  --bg-sidebar: #059669;
+  --bg-card: #ffffff;
+  --border-color: #d1fae5;
+  --text-main: #064E3B;
+  --text-muted: #047857;
   --text-inverse: #ffffff;
 
   /* 10% Accent Callouts: Sunshine Yellow */
-  --primary: #7B2CBF; /* --accent */
-  --primary-glow: rgba(123, 44, 191, 0.15);
-  --secondary: #A855F7; /* --accent-light */
-  --secondary-glow: rgba(168, 85, 247, 0.12);
+  --primary: #FBBF24;
+  --primary-glow: rgba(251, 191, 36, 0.15);
+  --secondary: #059669;
+  --secondary-glow: rgba(5, 150, 105, 0.12);
 
-  --success: #10B981;
+  --success: #10b981;
   --success-glow: rgba(16, 185, 129, 0.12);
-  --warning: #F59E0B;
+  --warning: #f59e0b;
   --warning-glow: rgba(245, 158, 11, 0.12);
-  --danger: #EF4444;
+  --danger: #ef4444;
   --danger-glow: rgba(239, 68, 68, 0.12);
 
-  --sidebar-text: #ffffff;
-  --sidebar-muted: rgba(255, 255, 255, 0.65);
-  --sidebar-active-bg: #7B2CBF;
-  --sidebar-hover-bg: #D63384;
+  --sidebar-text: rgba(255, 255, 255, 0.95);
+  --sidebar-muted: rgba(255, 255, 255, 0.6);
+  --sidebar-active-bg: #FBBF24;
+  --sidebar-hover-bg: rgba(255, 255, 255, 0.08);
   --sidebar-active-text: #ffffff;
 
   --shadow-sm: 0 2px 8px rgba(6, 78, 59, 0.05);
@@ -1017,14 +1017,18 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #FAF8FC, #F8F5FA);
+  background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
   padding: 20px;
   position: relative;
   overflow: hidden;
 }
 
 [data-theme="dark"] .login-page {
-  background: linear-gradient(135deg, var(--bg-app), #161e31);
+  background: linear-gradient(135deg, #022c22, #064e3b);
+  --primary: #10B981;
+  --primary-glow: rgba(16, 185, 129, 0.25);
+  --secondary: #34D399;
+  --secondary-glow: rgba(52, 211, 153, 0.15);
 }
 
 .login-blob {

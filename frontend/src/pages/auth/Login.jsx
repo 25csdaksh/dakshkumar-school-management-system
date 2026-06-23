@@ -113,14 +113,14 @@ export const Login = () => {
   };
 
   return (
-    <div style={{
+    <div className="login-page" style={{
       display: 'flex',
       flexDirection: 'column',
       minHeight: '100vh',
-      backgroundColor: 'var(--bg-app)',
       fontFamily: 'var(--font-body)',
       position: 'relative',
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      padding: 0
     }}>
       {/* Floating Theme Switcher */}
       <button 
