@@ -23,7 +23,7 @@ export const Login = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showDemoBox, setShowDemoBox] = useState(true);
+
 
   // Registration states
   const [regRole, setRegRole] = useState('student');
@@ -106,11 +106,7 @@ export const Login = () => {
     }
   };
 
-  const handleFillDemo = (demoEmail, demoPassword) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-    setIsRegister(false);
-  };
+
 
   return (
     <div className="login-page" style={{
@@ -569,47 +565,7 @@ export const Login = () => {
               )}
             </div>
 
-            {/* Quick Demo Fill Container */}
-            {showDemoBox && !isRegister && (
-              <div className="glass-panel" style={{
-                marginTop: '20px',
-                padding: '16px',
-                borderRadius: '16px',
-                border: '1px dashed var(--primary)',
-                background: 'var(--bg-card)'
-              }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700', fontSize: '0.75rem', marginBottom: '8px', color: 'var(--primary)' }}>
-                  <HelpCircle size={14} />
-                  <span>Autofill Demo Accounts</span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                  <button 
-                    onClick={() => handleFillDemo('admin@schoolerp.com', 'admin123')}
-                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
-                  >
-                    Admin Account
-                  </button>
-                  <button 
-                    onClick={() => handleFillDemo('teacher1@schoolerp.com', 'teacher123')}
-                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
-                  >
-                    Teacher Account
-                  </button>
-                  <button 
-                    onClick={() => handleFillDemo('student1@schoolerp.com', 'student123')}
-                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
-                  >
-                    Student Account
-                  </button>
-                  <button 
-                    onClick={() => handleFillDemo('parent1@schoolerp.com', 'parent123')}
-                    style={{ background: 'var(--bg-app)', border: '1px solid var(--border-color)', borderRadius: '6px', padding: '6px', fontSize: '0.7rem', cursor: 'pointer', color: 'var(--text-main)' }}
-                  >
-                    Parent Account
-                  </button>
-                </div>
-              </div>
-            )}
+
           </div>
         </div>
       </div>
