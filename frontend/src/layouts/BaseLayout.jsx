@@ -296,7 +296,7 @@ export const BaseLayout = ({ children, menuItems }) => {
 
             {/* Theme Toggle Button */}
             <button className="theme-toggle" onClick={toggleTheme} title="Toggle Dark/Light Mode">
-              {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+              {theme !== 'dark' ? <Moon size={20} /> : <Sun size={20} />}
             </button>
 
             {/* Profile Avatar Summary */}

@@ -165,6 +165,44 @@
   --glass-blur: blur(12px);
 }
 
+[data-theme="student-light"] {
+  /* 60% Dominant Canvas: Mint White */
+  --bg-app: #F4FDF7;
+
+  /* 30% Structural: Emerald Green for sidebar, white for cards, border light-green, deep green text */
+  --bg-sidebar: #059669;
+  --bg-card: #ffffff;
+  --border-color: #d1fae5;
+  --text-main: #064E3B;
+  --text-muted: #047857;
+  --text-inverse: #ffffff;
+
+  /* 10% Accent Callouts: Sunshine Yellow */
+  --primary: #FBBF24;
+  --primary-glow: rgba(251, 191, 36, 0.15);
+  --secondary: #059669;
+  --secondary-glow: rgba(5, 150, 105, 0.12);
+
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.12);
+  --warning: #f59e0b;
+  --warning-glow: rgba(245, 158, 11, 0.12);
+  --danger: #ef4444;
+  --danger-glow: rgba(239, 68, 68, 0.12);
+
+  --sidebar-text: rgba(255, 255, 255, 0.95);
+  --sidebar-muted: rgba(255, 255, 255, 0.6);
+  --sidebar-active-bg: #FBBF24;
+
+  --shadow-sm: 0 2px 8px rgba(6, 78, 59, 0.05);
+  --shadow-md: 0 8px 20px rgba(6, 78, 59, 0.08);
+  --shadow-lg: 0 16px 36px rgba(6, 78, 59, 0.1);
+
+  --glass-bg: rgba(255, 255, 255, 0.9);
+  --glass-border: rgba(5, 150, 105, 0.15);
+  --glass-blur: blur(12px);
+}
+
 /* Base Styles */
 * {
   margin: 0;

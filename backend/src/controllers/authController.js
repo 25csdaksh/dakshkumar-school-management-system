@@ -138,7 +138,12 @@ export const updateProfile = async (req, res) => {
       }
 
       if (req.file) {
-        user.profilePicture = req.file.path || `/uploads/${req.file.filename}`;
+        // If Cloudinary is configured, path starts with http/https. Otherwise use local fallback web URL.
+        if (req.file.path && (req.file.path.startsWith('http://') || req.file.path.startsWith('https://'))) {
+          user.profilePicture = req.file.path;
+        } else {
+          user.profilePicture = `http://localhost:5001/uploads/${req.file.filename}`;
+        }
       }
 
       const updatedUser = await user.save();

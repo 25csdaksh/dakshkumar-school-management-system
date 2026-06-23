@@ -19,6 +19,8 @@ export const AuthProvider = ({ children }) => {
           savedTheme = 'parent-light';
         } else if (cachedUser.role === 'teacher') {
           savedTheme = 'teacher-light';
+        } else if (cachedUser.role === 'student') {
+          savedTheme = 'student-light';
         }
       }
     }
@@ -38,6 +40,8 @@ export const AuthProvider = ({ children }) => {
           currentTheme = 'parent-light';
         } else if (data.role === 'teacher') {
           currentTheme = 'teacher-light';
+        } else if (data.role === 'student') {
+          currentTheme = 'student-light';
         }
       }
       setTheme(currentTheme);
@@ -61,6 +65,8 @@ export const AuthProvider = ({ children }) => {
           currentTheme = 'parent-light';
         } else if (data.role === 'teacher') {
           currentTheme = 'teacher-light';
+        } else if (data.role === 'student') {
+          currentTheme = 'student-light';
         }
       }
       setTheme(currentTheme);
@@ -91,6 +97,8 @@ export const AuthProvider = ({ children }) => {
           currentTheme = 'parent-light';
         } else if (data.role === 'teacher') {
           currentTheme = 'teacher-light';
+        } else if (data.role === 'student') {
+          currentTheme = 'student-light';
         }
       }
       setTheme(currentTheme);
@@ -109,6 +117,8 @@ export const AuthProvider = ({ children }) => {
         nextTheme = 'parent-light';
       } else if (user && user.role === 'teacher') {
         nextTheme = 'teacher-light';
+      } else if (user && user.role === 'student') {
+        nextTheme = 'student-light';
       } else {
         nextTheme = 'light';
       }
@@ -116,7 +126,7 @@ export const AuthProvider = ({ children }) => {
       nextTheme = 'dark';
     }
     setTheme(nextTheme);
-    localStorage.setItem('theme', (nextTheme === 'parent-light' || nextTheme === 'teacher-light') ? 'light' : nextTheme);
+    localStorage.setItem('theme', (nextTheme === 'parent-light' || nextTheme === 'teacher-light' || nextTheme === 'student-light') ? 'light' : nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
   };
 
