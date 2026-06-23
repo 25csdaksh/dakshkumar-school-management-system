@@ -531,20 +531,48 @@ export const getNotifications = async (req, res) => {
     }
     const roleName = user.role?.name || 'student';
     
-    let audiences = ['All'];
-    if (roleName === 'student') {
-      audiences.push('Students');
-    } else if (roleName === 'parent') {
-      audiences.push('Parents', 'Students');
+    let query = {};
+    
+    if (roleName === 'parent') {
+      // Find children
+      const children = await Student.find({ parentEmail: user.email });
+      const childUserIds = children.map(c => c.user);
+      
+      query = {
+        targetAudience: { $in: ['All', 'Parents', 'Students'] },
+        $or: [
+          { targetUser: { $exists: false } },
+          { targetUser: null },
+          { targetUser: { $in: childUserIds } }
+        ]
+      };
+    } else if (roleName === 'student') {
+      query = {
+        targetAudience: { $in: ['All', 'Students'] },
+        $or: [
+          { targetUser: { $exists: false } },
+          { targetUser: null },
+          { targetUser: user._id }
+        ]
+      };
     } else if (roleName === 'teacher') {
-      audiences.push('Teachers');
+      query = {
+        targetAudience: { $in: ['All', 'Teachers'] },
+        $or: [
+          { targetUser: { $exists: false } },
+          { targetUser: null },
+          { targetUser: user._id }
+        ]
+      };
     } else if (roleName === 'admin') {
-      audiences.push('Teachers', 'Students', 'Parents');
+      query = {
+        targetAudience: { $in: ['All', 'Teachers', 'Students', 'Parents'] }
+      };
+    } else {
+      query = { targetAudience: 'All' };
     }
 
-    const notifications = await Notice.find({
-      targetAudience: { $in: audiences }
-    }).sort({ createdAt: -1 }).limit(20);
+    const notifications = await Notice.find(query).sort({ createdAt: -1 }).limit(20);
 
     res.json(notifications);
   } catch (error) {

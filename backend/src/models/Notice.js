@@ -15,6 +15,10 @@ const noticeSchema = new mongoose.Schema({
     enum: ['All', 'Teachers', 'Students', 'Parents'],
     default: 'All'
   },
+  targetUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
