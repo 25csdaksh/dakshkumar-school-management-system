@@ -161,9 +161,14 @@ export const getStudentDashboard = async (req, res) => {
     // Invoices
     const fees = await Fee.find({ student: studentUserId }).sort({ dueDate: 1 });
 
-    // Notices
+    // Notices (only fetch global or ones targeted to this student)
     const notices = await Notice.find({
-      targetAudience: { $in: ['All', 'Students', 'Parents'] }
+      targetAudience: { $in: ['All', 'Students', 'Parents'] },
+      $or: [
+        { targetUser: { $exists: false } },
+        { targetUser: null },
+        { targetUser: studentUserId }
+      ]
     }).sort({ createdAt: -1 }).limit(5);
 
     res.json({

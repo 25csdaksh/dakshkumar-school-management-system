@@ -1,5 +1,6 @@
 import Attendance from '../models/Attendance.js';
 import Student from '../models/Student.js';
+import Notice from '../models/Notice.js';
 
 // @desc    Teacher: Mark/Record attendance for class section
 // @route   POST /api/teacher/attendance
@@ -26,6 +27,70 @@ export const markAttendance = async (req, res) => {
     }));
 
     await Attendance.bulkWrite(operations);
+
+    // Sync absence notices for parents
+    const studentUserIds = attendanceData.map(r => r.studentId);
+    const studentDocs = await Student.find({ user: { $in: studentUserIds } });
+    const studentMap = {};
+    studentDocs.forEach(s => {
+      studentMap[s.user.toString()] = s;
+    });
+
+    const startOfDay = new Date(formattedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(formattedDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const existingNotices = await Notice.find({
+      targetUser: { $in: studentUserIds },
+      title: new RegExp('^Absence Alert:', 'i'),
+      createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+    const noticeMap = {};
+    existingNotices.forEach(n => {
+      noticeMap[n.targetUser.toString()] = n;
+    });
+
+    const noticesToCreate = [];
+    const noticesToDeleteUserIds = [];
+
+    for (const record of attendanceData) {
+      const studentUserId = record.studentId.toString();
+      const status = record.status;
+
+      if (status === 'Absent') {
+        if (!noticeMap[studentUserId]) {
+          const studentDoc = studentMap[studentUserId];
+          const studentName = studentDoc ? studentDoc.name : 'Student';
+          const rollNumber = studentDoc ? studentDoc.rollNumber : '-';
+
+          noticesToCreate.push({
+            title: `Absence Alert: ${studentName} / ગેરહાજર સૂચના: ${studentName}`,
+            content: `${studentName} (Roll No: ${rollNumber}) was marked absent on ${formattedDate.toLocaleDateString()}.`,
+            targetAudience: 'Parents',
+            targetUser: record.studentId,
+            createdBy: req.user._id
+          });
+        }
+      } else {
+        // Status is Present or Late, delete today's notice if it exists
+        if (noticeMap[studentUserId]) {
+          noticesToDeleteUserIds.push(record.studentId);
+        }
+      }
+    }
+
+    if (noticesToCreate.length > 0) {
+      await Notice.insertMany(noticesToCreate);
+    }
+    if (noticesToDeleteUserIds.length > 0) {
+      await Notice.deleteMany({
+        targetUser: { $in: noticesToDeleteUserIds },
+        title: new RegExp('^Absence Alert:', 'i'),
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      });
+    }
+
     res.json({ message: 'Attendance recorded successfully' });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -93,6 +158,8 @@ export const logBiometricAttendance = async (req, res) => {
       return res.status(404).json({ message: `Student with Roll Number ${rollNumber} not found` });
     }
 
+    const finalStatus = status || 'Present';
+
     // 2. Perform upsert attendance log
     const log = await Attendance.findOneAndUpdate(
       { student: studentDoc.user, date: formattedDate },
@@ -101,13 +168,45 @@ export const logBiometricAttendance = async (req, res) => {
         classId: studentDoc.classId,
         section: 'A', // default section
         date: formattedDate,
-        status: status || 'Present',
+        status: finalStatus,
         markedBy: studentDoc.user // System auto-marked
       },
       { upsert: true, new: true }
     );
 
-    console.log(`[BIOMETRIC-API] Attendance marked for Student: ${rollNumber} -> Status: ${status || 'Present'}`);
+    // Sync absence notice for parents
+    const startOfDay = new Date(formattedDate);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(formattedDate);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    if (finalStatus === 'Absent') {
+      const existingNotice = await Notice.findOne({
+        targetUser: studentDoc.user,
+        title: new RegExp('^Absence Alert:', 'i'),
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      });
+
+      if (!existingNotice) {
+        const studentName = studentDoc.name || 'Student';
+        await Notice.create({
+          title: `Absence Alert: ${studentName} / ગેરહાજર સૂચના: ${studentName}`,
+          content: `${studentName} (Roll No: ${rollNumber}) was marked absent on ${formattedDate.toLocaleDateString()}.`,
+          targetAudience: 'Parents',
+          targetUser: studentDoc.user,
+          createdBy: studentDoc.user
+        });
+      }
+    } else {
+      // If student is Present or Late, delete today's absence notice if it exists
+      await Notice.deleteMany({
+        targetUser: studentDoc.user,
+        title: new RegExp('^Absence Alert:', 'i'),
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+      });
+    }
+
+    console.log(`[BIOMETRIC-API] Attendance marked for Student: ${rollNumber} -> Status: ${finalStatus}`);
     res.status(201).json({ success: true, log });
   } catch (error) {
     res.status(500).json({ message: error.message });
