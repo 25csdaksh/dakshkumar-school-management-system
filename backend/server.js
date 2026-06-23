@@ -1,9 +1,6 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import connectDB from './src/config/db.js';
 import app from './src/app.js';
-
-// Load environmental variables
-dotenv.config();
 
 // Connect to MongoDB Database
 connectDB();
