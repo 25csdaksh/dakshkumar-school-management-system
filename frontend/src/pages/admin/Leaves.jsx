@@ -39,6 +39,19 @@ export const Leaves = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this leave application?')) return;
+    try {
+      setMessage('');
+      setError('');
+      await teacherService.deleteLeave(id);
+      setMessage('Leave application deleted successfully.');
+      loadLeaves();
+    } catch (err) {
+      setError(err.message || 'Failed to delete leave application');
+    }
+  };
+
   if (loading) return <div className="text-center mt-4"><h3>Loading Leaves Review Console...</h3></div>;
 
   return (
@@ -67,12 +80,13 @@ export const Leaves = () => {
                 <th>Reason</th>
                 <th>Status</th>
                 <th>Approver Review</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {leaves.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center" style={{ color: 'var(--text-muted)' }}>
+                  <td colSpan="7" className="text-center" style={{ color: 'var(--text-muted)' }}>
                     No faculty leaves listed in the system database.
                   </td>
                 </tr>
@@ -128,6 +142,15 @@ export const Leaves = () => {
                           </div>
                         </div>
                       )}
+                    </td>
+                    <td>
+                      <button 
+                        className="btn btn-danger" 
+                        style={{ padding: '6px 12px', fontSize: '0.8rem' }}
+                        onClick={() => handleDelete(leave._id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))

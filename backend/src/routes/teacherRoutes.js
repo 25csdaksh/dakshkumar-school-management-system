@@ -12,7 +12,8 @@ import {
   getMyLeaves,
   getAllLeaves,
   reviewLeave,
-  getSalaryDetails
+  getSalaryDetails,
+  deleteLeave
 } from '../controllers/teacherController.js';
 import {
   markAttendance,
@@ -32,6 +33,7 @@ router.put('/admin/:id', protect, authorize('admin'), updateTeacher);
 router.delete('/admin/:id', protect, authorize('admin'), deleteTeacher);
 router.get('/leaves/admin', protect, authorize('admin'), getAllLeaves);
 router.put('/leaves/admin/:id', protect, authorize('admin'), reviewLeave);
+router.delete('/leaves/admin/:id', protect, authorize('admin'), deleteLeave);
 
 // Teacher operations
 router.get('/classes', protect, authorize('teacher', 'admin'), getAssignedClasses);

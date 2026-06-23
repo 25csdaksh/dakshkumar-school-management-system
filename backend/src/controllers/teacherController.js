@@ -343,3 +343,22 @@ export const updateTeacher = async (req, res) => {
   }
 };
 
+// @desc    Admin: Delete leave application
+// @route   DELETE /api/teacher/leaves/admin/:id
+export const deleteLeave = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const leave = await LeaveApplication.findById(id);
+    if (!leave) {
+      return res.status(404).json({ message: 'Leave application not found' });
+    }
+
+    await LeaveApplication.findByIdAndDelete(id);
+
+    res.json({ message: 'Leave application deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+

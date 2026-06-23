@@ -20,6 +20,11 @@ export const teacherService = {
       body: JSON.stringify(reviewData)
     });
   },
+  deleteLeave: async (id) => {
+    return await apiCall(`/teacher/leaves/admin/${id}`, {
+      method: 'DELETE'
+    });
+  },
 
   // Salary
   getSalary: async () => {
