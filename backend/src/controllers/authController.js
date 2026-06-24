@@ -268,19 +268,21 @@ export const registerUser = async (req, res) => {
     let teacherDetails = null;
 
     if (role.toLowerCase() === 'student') {
-      const { rollNumber, classId, parentEmail } = studentInfo || {};
+      const { rollNumber, classId, parentEmail, gender } = studentInfo || {};
       const student = new Student({
         user: savedUser._id,
         name: savedUser.name,
         rollNumber: rollNumber || `ST-${Math.floor(100 + Math.random() * 900)}`,
         classId: classId || undefined,
-        parentEmail
+        parentEmail,
+        gender: gender || 'Male'
       });
       await student.save();
       studentDetails = {
         rollNumber: student.rollNumber,
         classId: student.classId,
-        parentEmail: student.parentEmail
+        parentEmail: student.parentEmail,
+        gender: student.gender
       };
     } else if (role.toLowerCase() === 'teacher') {
       const { qualification, subjects } = teacherInfo || {};
