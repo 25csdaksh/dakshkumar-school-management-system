@@ -113,15 +113,18 @@ export const getAttendanceRecord = async (req, res) => {
       date: formattedDate
     }).populate('student', 'name email');
 
-    // Load roll numbers
+    // Load roll numbers and genders
     const studentDocs = await Student.find({ classId });
     const rollMap = {};
+    const genderMap = {};
     studentDocs.forEach(s => {
       rollMap[s.user.toString()] = s.rollNumber;
+      genderMap[s.user.toString()] = s.gender || 'Male';
     });
 
     const formatted = attendanceList.map(rec => {
       if (!rec.student) return null;
+      const studentGender = genderMap[rec.student._id.toString()] || 'Male';
       return {
         _id: rec._id,
         date: rec.date,
@@ -130,8 +133,10 @@ export const getAttendanceRecord = async (req, res) => {
           _id: rec.student._id,
           name: rec.student.name,
           email: rec.student.email,
+          gender: studentGender,
           studentInfo: {
-            rollNumber: rollMap[rec.student._id.toString()] || '-'
+            rollNumber: rollMap[rec.student._id.toString()] || '-',
+            gender: studentGender
           }
         }
       };

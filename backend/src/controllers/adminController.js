@@ -80,7 +80,11 @@ export const getClasses = async (req, res) => {
 
     // Format output to look like flat objects for frontend compatibility
     const formatted = await Promise.all(classes.map(async c => {
-      const studentCount = await Student.countDocuments({ classId: c._id });
+      const [studentCount, boyCount, girlCount] = await Promise.all([
+        Student.countDocuments({ classId: c._id }),
+        Student.countDocuments({ classId: c._id, gender: 'Male' }),
+        Student.countDocuments({ classId: c._id, gender: 'Female' })
+      ]);
       return {
         _id: c._id,
         name: c.name,
@@ -88,6 +92,8 @@ export const getClasses = async (req, res) => {
         classTeacher: c.classTeacher,
         sectionTeachers: c.sectionTeachers || [],
         studentCount,
+        boyCount,
+        girlCount,
         subjects: c.subjects.map(s => ({
           name: s.subject?.name || 'Subject',
           teacher: s.teacher

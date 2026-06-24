@@ -71,9 +71,20 @@ export const Dashboard = () => {
                 }}>
                   <div>
                     <h4 style={{ fontSize: '1.05rem' }}>{c.name}</h4>
-                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
                       Subjects: {c.subjects.filter(s => s.teacher === user?._id || s.teacher?._id === user?._id).map(s => s.name).join(', ')}
                     </span>
+                    <div style={{ display: 'flex', gap: '8px', fontSize: '0.75rem' }}>
+                      <span style={{ color: 'var(--text-main)', background: 'var(--bg-card)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                        Total: <strong>{c.studentCount || 0}</strong>
+                      </span>
+                      <span style={{ color: 'var(--primary)', background: 'var(--primary-glow)', padding: '2px 6px', borderRadius: '4px', border: '1px solid var(--primary)' }}>
+                        Boys: <strong>{c.boyCount || 0}</strong>
+                      </span>
+                      <span style={{ color: '#ec4899', background: 'rgba(236,72,153,0.1)', padding: '2px 6px', borderRadius: '4px', border: '1px solid rgba(236,72,153,0.3)' }}>
+                        Girls: <strong>{c.girlCount || 0}</strong>
+                      </span>
+                    </div>
                   </div>
                   <span className="badge badge-primary">Active</span>
                 </div>

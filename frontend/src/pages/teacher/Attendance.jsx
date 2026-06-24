@@ -83,6 +83,28 @@ export const Attendance = () => {
     }
   };
 
+  const getPresentCounts = () => {
+    let presentBoys = 0;
+    let presentGirls = 0;
+    let totalBoys = 0;
+    let totalGirls = 0;
+
+    students.forEach(student => {
+      const isPresent = attendanceStatuses[student._id] === 'Present' || attendanceStatuses[student._id] === 'Late';
+      const gender = student.gender || student.studentInfo?.gender || 'Male';
+
+      if (gender.toLowerCase() === 'female') {
+        totalGirls++;
+        if (isPresent) presentGirls++;
+      } else {
+        totalBoys++;
+        if (isPresent) presentBoys++;
+      }
+    });
+
+    return { presentBoys, presentGirls, totalBoys, totalGirls };
+  };
+
   return (
     <div>
       <div style={{ marginBottom: '32px' }}>
@@ -155,6 +177,44 @@ export const Attendance = () => {
         </div>
       ) : students.length > 0 ? (
         <div>
+          {/* Presence Summary Panel */}
+          {(() => {
+            const { presentBoys, presentGirls, totalBoys, totalGirls } = getPresentCounts();
+            return (
+              <div className="glass-panel" style={{ 
+                padding: '16px 24px', 
+                marginBottom: '20px', 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '16px',
+                borderLeft: '4px solid var(--primary)'
+              }}>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '1rem' }}>Roster Summary & Live Attendance counts</h4>
+                  <p style={{ margin: '2px 0 0 0', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                    Displays the number of boys and girls marked present out of the total enrolled in this section.
+                  </p>
+                </div>
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <div style={{ padding: '8px 16px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '2px' }}>Total Present</span>
+                    <strong style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>{presentBoys + presentGirls} <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-muted)' }}>/ {students.length}</span></strong>
+                  </div>
+                  <div style={{ padding: '8px 16px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: 'var(--primary)', marginBottom: '2px' }}>Boys Present</span>
+                    <strong style={{ fontSize: '1.2rem', color: 'var(--primary)' }}>{presentBoys} <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-muted)' }}>/ {totalBoys}</span></strong>
+                  </div>
+                  <div style={{ padding: '8px 16px', background: 'var(--bg-app)', borderRadius: '8px', border: '1px solid var(--border-color)', textAlign: 'center' }}>
+                    <span style={{ display: 'block', fontSize: '0.75rem', color: '#ec4899', marginBottom: '2px' }}>Girls Present</span>
+                    <strong style={{ fontSize: '1.2rem', color: '#ec4899' }}>{presentGirls} <span style={{ fontSize: '0.8rem', fontWeight: 'normal', color: 'var(--text-muted)' }}>/ {totalGirls}</span></strong>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
+
           <div className="glass-panel table-responsive" style={{ marginBottom: '20px' }}>
             <table className="custom-table">
               <thead>

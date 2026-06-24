@@ -13,7 +13,7 @@ import xlsx from 'xlsx';
 // @desc    Admin: Register a new student
 export const createStudent = async (req, res) => {
   const { name, email, password, phone, address, studentInfo } = req.body;
-  const { rollNumber, classId, parentEmail, section, category } = studentInfo || {};
+  const { rollNumber, classId, parentEmail, section, category, gender } = studentInfo || {};
 
   try {
     const userExists = await User.findOne({ email });
@@ -48,7 +48,8 @@ export const createStudent = async (req, res) => {
       parentEmail,
       parentPhone: phone || '',
       address: address || '',
-      category: category || 'open'
+      category: category || 'open',
+      gender: gender || 'Male'
     });
     await student.save();
 
@@ -88,6 +89,7 @@ export const getStudents = async (req, res) => {
         email: doc.user.email,
         role: 'student',
         phone: doc.user.phone,
+        gender: doc.gender || 'Male',
         address: doc.address || doc.user.address || '',
         profilePicture: doc.user.profilePicture,
         studentInfo: {
@@ -96,6 +98,7 @@ export const getStudents = async (req, res) => {
           section: doc.section || 'A',
           parentEmail: doc.parentEmail,
           category: doc.category || 'open',
+          gender: doc.gender || 'Male',
           address: doc.address || doc.user.address || ''
         }
       };
@@ -306,7 +309,7 @@ export const getStudentHomework = async (req, res) => {
 export const updateStudent = async (req, res) => {
   const { id } = req.params;
   const { name, email, phone, password, address, studentInfo } = req.body;
-  const { rollNumber, classId, parentEmail, parentName, parentPhone, bloodGroup, aadhaarNumber, section, category } = studentInfo || {};
+  const { rollNumber, classId, parentEmail, parentName, parentPhone, bloodGroup, aadhaarNumber, section, category, gender } = studentInfo || {};
 
   try {
     const user = await User.findById(id);
@@ -333,6 +336,7 @@ export const updateStudent = async (req, res) => {
     student.aadhaarNumber = aadhaarNumber || student.aadhaarNumber;
     if (address !== undefined) student.address = address;
     if (category !== undefined) student.category = category;
+    if (gender !== undefined) student.gender = gender;
     await student.save();
 
     res.json({ message: 'Student updated successfully', data: { user, student } });
@@ -425,6 +429,17 @@ export const importStudents = async (req, res) => {
       const parentPhoneRaw = getRowValue(row, ['parent phone', 'parent mobile', 'father phone', 'mother phone', 'parentPhone', 'parent_phone', 'mobile no.', 'mobile no', 'mobile', 'Phone', 'phone']);
       const parentPhone = parentPhoneRaw ? String(parentPhoneRaw).trim() : '';
 
+      const genderRaw = getRowValue(row, ['gender', 'Gender', 'Sex', 'sex']);
+      let gender = 'Male';
+      if (genderRaw) {
+        const trimmedGender = String(genderRaw).trim().toLowerCase();
+        if (trimmedGender.startsWith('f')) {
+          gender = 'Female';
+        } else if (trimmedGender.startsWith('o')) {
+          gender = 'Other';
+        }
+      }
+
       // Check required fields
       if (!grNo) {
         validationErrors.push(`Row ${rowIndex}: Student ID (or GR No) is missing.`);
@@ -469,7 +484,8 @@ export const importStudents = async (req, res) => {
         address,
         category,
         parentName,
-        parentPhone
+        parentPhone,
+        gender
       });
     }
 
@@ -532,7 +548,8 @@ export const importStudents = async (req, res) => {
         parentName: data.parentName || '',
         parentPhone: data.parentPhone || data.phone || '',
         address: data.address || '',
-        category: data.category || 'open'
+        category: data.category || 'open',
+        gender: data.gender || 'Male'
       });
       await student.save();
 

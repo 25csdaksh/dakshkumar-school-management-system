@@ -25,6 +25,12 @@ const studentSchema = new mongoose.Schema({
     required: true,
     default: 'A'
   },
+  gender: {
+    type: String,
+    trim: true,
+    enum: ['Male', 'Female', 'Other'],
+    default: 'Male'
+  },
   parentEmail: {
     type: String,
     required: true,

@@ -24,6 +24,7 @@ export const Students = () => {
   const [classId, setClassId] = useState('');
   const [section, setSection] = useState('A');
   const [parentEmail, setParentEmail] = useState('');
+  const [gender, setGender] = useState('Male');
 
   // Table Filtering States
   const [filterClassId, setFilterClassId] = useState('All');
@@ -72,6 +73,7 @@ export const Students = () => {
     if (classes.length > 0) setClassId(classes[0]._id);
     setSection('A');
     setParentEmail('');
+    setGender('Male');
     setError('');
     setSuccess('');
     setShowModal(true);
@@ -90,6 +92,7 @@ export const Students = () => {
     setClassId(student.studentInfo?.classId?._id || student.studentInfo?.classId || '');
     setSection(student.studentInfo?.section || 'A');
     setParentEmail(student.studentInfo?.parentEmail || '');
+    setGender(student.gender || student.studentInfo?.gender || 'Male');
     setError('');
     setSuccess('');
     setShowModal(true);
@@ -116,7 +119,8 @@ export const Students = () => {
         section,
         parentEmail,
         category,
-        address
+        address,
+        gender
       }
     };
 
@@ -281,6 +285,7 @@ export const Students = () => {
                   <th>Name</th>
                   <th>Roll Number</th>
                   <th>Grade Class</th>
+                  <th>Gender</th>
                   <th>Email / Contact</th>
                   <th>Parent Email</th>
                   <th>Actions</th>
@@ -289,7 +294,7 @@ export const Students = () => {
               <tbody>
                 {filteredStudents.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="text-center" style={{ color: 'var(--text-muted)' }}>
+                    <td colSpan="8" className="text-center" style={{ color: 'var(--text-muted)' }}>
                       No students found matching current filters.
                     </td>
                   </tr>
@@ -317,6 +322,14 @@ export const Students = () => {
                           </span>
                         )}
                       </div>
+                    </td>
+                    <td>
+                      <span className={`badge ${student.gender === 'Female' ? 'badge-danger' : 'badge-primary'}`} style={{
+                        backgroundColor: student.gender === 'Female' ? '#ec4899' : undefined,
+                        borderColor: student.gender === 'Female' ? '#ec4899' : undefined
+                      }}>
+                        {student.gender || 'Male'}
+                      </span>
                     </td>
                     <td>
                       <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -457,7 +470,7 @@ export const Students = () => {
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
                 <div className="form-group">
                   <label className="form-label">Phone</label>
                   <input 
@@ -466,6 +479,19 @@ export const Students = () => {
                     value={phone} 
                     onChange={(e) => setPhone(e.target.value)} 
                   />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Gender</label>
+                  <select 
+                    className="form-control" 
+                    value={gender} 
+                    onChange={(e) => setGender(e.target.value)}
+                    required
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Category</label>
@@ -557,6 +583,10 @@ export const Students = () => {
                   <span style={{ color: 'var(--text-muted)' }}>Contact No:</span>
                   <strong>{selectedStudent.phone || 'N/A'}</strong>
                 </div>
+                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'var(--text-muted)' }}>Gender:</span>
+                  <strong>{selectedStudent.gender || selectedStudent.studentInfo?.gender || 'Male'}</strong>
+                </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'var(--text-muted)' }}>Category:</span>
                   <strong style={{ textTransform: 'uppercase' }}>{selectedStudent.studentInfo?.category || 'open'}</strong>
@@ -623,9 +653,10 @@ export const Students = () => {
                 <li><strong>section</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. 1 or A, will resolve 1 to A)</span></li>
                 <li><strong>mobile no.</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional contact)</span></li>
                 <li><strong>emai ID</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional parent email)</span></li>
-                <li><strong>parent name</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. Father/Mother Name)</span></li>
+                 <li><strong>parent name</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. Father/Mother Name)</span></li>
                 <li><strong>parent phone</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional parent contact)</span></li>
                 <li><strong>address</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional residence)</span></li>
+                <li><strong>gender</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional, e.g. Male or Female)</span></li>
                 <li><strong>cetegary</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional social category, e.g. open, obc, sc, st)</span></li>
                 <li><strong>GR NO</strong> <span style={{ color: 'var(--text-muted)' }}>(Optional fallback ID)</span></li>
               </ul>

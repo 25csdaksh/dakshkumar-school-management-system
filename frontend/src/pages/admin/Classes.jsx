@@ -212,6 +212,17 @@ export const Classes = () => {
                         Class Teacher: <strong>{c.classTeacher?.name || 'Unassigned'}</strong>
                       </p>
                     )}
+                    <div style={{ marginTop: '10px', display: 'flex', gap: '12px', fontSize: '0.8rem' }}>
+                      <span style={{ color: 'var(--text-main)', background: 'var(--bg-app)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--border-color)' }}>
+                        Total: <strong>{c.studentCount || 0}</strong>
+                      </span>
+                      <span style={{ color: 'var(--primary)', background: 'var(--primary-glow)', padding: '4px 8px', borderRadius: '4px', border: '1px solid var(--primary)' }}>
+                        Boys: <strong>{c.boyCount || 0}</strong>
+                      </span>
+                      <span style={{ color: '#ec4899', background: 'rgba(236,72,153,0.1)', padding: '4px 8px', borderRadius: '4px', border: '1px solid rgba(236,72,153,0.3)' }}>
+                        Girls: <strong>{c.girlCount || 0}</strong>
+                      </span>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '4px' }}>
                     {c.sections.map((sec, idx) => (

@@ -156,20 +156,28 @@ export const getAssignedClasses = async (req, res) => {
     .populate('subjects.subject');
 
     // Format output to send flat names of subjects for frontend compatibility
-    const formatted = classes.map(c => {
+    const formatted = await Promise.all(classes.map(async c => {
       const classSubjects = c.subjects.map(subItem => ({
         name: subItem.subject?.name || 'Subject',
         teacher: subItem.teacher
       }));
+      const [studentCount, boyCount, girlCount] = await Promise.all([
+        Student.countDocuments({ classId: c._id }),
+        Student.countDocuments({ classId: c._id, gender: 'Male' }),
+        Student.countDocuments({ classId: c._id, gender: 'Female' })
+      ]);
       return {
         _id: c._id,
         name: c.name,
         sections: c.sections,
         classTeacher: c.classTeacher,
         sectionTeachers: c.sectionTeachers || [],
-        subjects: classSubjects
+        subjects: classSubjects,
+        studentCount,
+        boyCount,
+        girlCount
       };
-    });
+    }));
 
     res.json(formatted);
   } catch (error) {
@@ -196,6 +204,7 @@ export const getStudentsByClass = async (req, res) => {
         name: doc.user.name,
         email: doc.user.email,
         phone: doc.user.phone,
+        gender: doc.gender || 'Male',
         studentInfo: {
           rollNumber: doc.rollNumber,
           classId: doc.classId,
@@ -205,7 +214,8 @@ export const getStudentsByClass = async (req, res) => {
           bloodGroup: doc.bloodGroup,
           aadhaarNumber: doc.aadhaarNumber,
           medicalHistory: doc.medicalHistory,
-          vaccinationRecords: doc.vaccinationRecords
+          vaccinationRecords: doc.vaccinationRecords,
+          gender: doc.gender || 'Male'
         }
       };
     }).filter(s => s !== null);
