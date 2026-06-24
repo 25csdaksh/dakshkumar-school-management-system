@@ -163,7 +163,7 @@ export const getAssignedClasses = async (req, res) => {
       }));
       const [studentCount, boyCount, girlCount] = await Promise.all([
         Student.countDocuments({ classId: c._id }),
-        Student.countDocuments({ classId: c._id, gender: 'Male' }),
+        Student.countDocuments({ classId: c._id, $or: [{ gender: 'Male' }, { gender: { $exists: false } }, { gender: '' }] }),
         Student.countDocuments({ classId: c._id, gender: 'Female' })
       ]);
       return {

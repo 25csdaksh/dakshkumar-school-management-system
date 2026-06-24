@@ -268,21 +268,7 @@ export const BaseLayout = ({ children, menuItems }) => {
               </button>
 
               {notificationsOpen && (
-                <div className="glass-panel" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  marginTop: '12px',
-                  width: '320px',
-                  maxHeight: '400px',
-                  overflowY: 'auto',
-                  zIndex: 1000,
-                  padding: '16px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  boxShadow: 'var(--shadow-lg)'
-                }}>
+                <div className="glass-panel notifications-dropdown">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)', paddingBottom: '8px' }}>
                     <h4 style={{ margin: 0, fontSize: '0.95rem' }}>{t('announcements')}</h4>
                     <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{notifications.length} {t('total')}</span>
